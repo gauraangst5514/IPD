@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+*.egg
+
+# Node
+node_modules/
+frontend/dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML Models (large files)
+ml/weights/*.pth
+ml/weights/*.pt
+*.h5
+
+# Data (large image datasets)
+data/raw/
+data/processed/
+data/car_damage/train/
+data/car_damage/val/
+data/cardd_yolo/
+
+# ML training runs
+ml/weights/detection/
+runs/
+
+# Docker volumes
+postgres_data/
+neo4j_data/
+minio_data/
+test_output.png
+yolov8n.pt
+yolov8s.pt
+*.pt
+backend/.env
+start.sh
+uploads/

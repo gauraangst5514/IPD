@@ -1,0 +1,16 @@
+torch==2.3.0
+torchvision==0.18.0
+ultralytics==8.4.77
+opencv-python==4.10.0.84
+pillow==10.4.0
+numpy==1.26.4
+scikit-learn==1.5.1
+pytorch-grad-cam==1.5.4
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+python-multipart==0.0.9
+pydantic==2.9.0
+imagehash==4.3.1
+exifread==3.0.0
+huggingface_hub==0.25.0
+httpx==0.27.0
