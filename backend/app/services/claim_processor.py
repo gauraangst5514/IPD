@@ -23,8 +23,10 @@ from sqlalchemy import select
 from app.models.claim import Claim, ClaimImage, ClaimStatus, SeverityLevel, DamageType
 from app.models.vehicle import Vehicle
 from app.models.fraud import FraudFlag
+from app.models.user import User
 from app.services.storage import get_storage_service
 from app.services.ml_client import get_ml_client
+from app.services.graph_fraud import sync_claim_to_graph, check_fraud_rings
 
 
 # Map ML primary_damage_type string -> DamageType enum
@@ -61,6 +63,10 @@ async def process_claim(claim_id: str, db: AsyncSession):
     # Load vehicle info (for cost estimation)
     vehicle_result = await db.execute(select(Vehicle).where(Vehicle.id == claim.vehicle_id))
     vehicle = vehicle_result.scalar_one_or_none()
+
+    # Load claimant (User) info (for fraud graph)
+    claimant_result = await db.execute(select(User).where(User.id == claim.claimant_id))
+    claimant = claimant_result.scalar_one_or_none()
 
     vehicle_make = vehicle.make if vehicle else "hyundai"
     vehicle_year = vehicle.year if vehicle else 2022
@@ -151,6 +157,29 @@ async def process_claim(claim_id: str, db: AsyncSession):
 
         # Cost breakdown from the highest-cost image
         best_result = max(all_results, key=lambda r: r["cost_estimate_max"])
+
+        # Integrate Neo4j Graph Fraud Analysis
+        try:
+            if claimant and vehicle:
+                await sync_claim_to_graph(claim, claimant, vehicle)
+                graph_fraud = await check_fraud_rings(claim.id)
+                
+                # Add graph fraud score to the max image fraud score
+                max_fraud_score = min(max_fraud_score + graph_fraud["score"], 1.0)
+                
+                # Add graph flags
+                for flag in graph_fraud["flags"]:
+                    all_fraud_flags[flag] = True
+                    fraud_record = FraudFlag(
+                        claim_id=claim.id,
+                        flag_type="graph_fraud",
+                        severity="high",
+                        confidence=1.0,
+                        description=flag,
+                    )
+                    db.add(fraud_record)
+        except Exception as e:
+            print(f"⚠️  Graph fraud analysis failed: {e}")
 
         # Update claim
         claim.severity = SEVERITY_MAP.get(worst_severity, SeverityLevel.MODERATE)

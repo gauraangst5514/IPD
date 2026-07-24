@@ -29,11 +29,15 @@ app.include_router(api_router)
 async def startup_event():
     # Create DB tables (for dev without Alembic migrations)
     from app.core.database import create_tables
+    from app.core.neo4j_db import neo4j_manager
     from app.models import User, Claim, ClaimImage, ClaimAssessment, Vehicle, FraudFlag  # noqa: F401
     await create_tables()
+    await neo4j_manager.connect()
     print(f"🚀 {settings.APP_NAME} v{settings.APP_VERSION} starting...")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
+    from app.core.neo4j_db import neo4j_manager
+    await neo4j_manager.close()
     print(f"👋 {settings.APP_NAME} shutting down...")
