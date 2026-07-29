@@ -29,6 +29,8 @@ class MLServiceClient:
         vehicle_year: int = 2022,
         region: str = "mumbai",
         claim_id: str = "",
+        description: str = "",
+        registration_number: str = "",
     ) -> dict:
         """
         Send an image to the ML service for full analysis.
@@ -58,6 +60,8 @@ class MLServiceClient:
                     "vehicle_year": str(vehicle_year),
                     "region": region,
                     "claim_id": claim_id,
+                    "description": description,
+                    "registration_number": registration_number,
                 },
             )
             response.raise_for_status()

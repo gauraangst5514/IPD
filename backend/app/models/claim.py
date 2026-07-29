@@ -58,6 +58,7 @@ class Claim(Base):
 
     fraud_risk_score: Mapped[float] = mapped_column(Float, nullable=True)
     fraud_flags: Mapped[dict] = mapped_column(JSON, nullable=True)
+    detections: Mapped[dict] = mapped_column(JSON, nullable=True)  # Raw detection results for damage map
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

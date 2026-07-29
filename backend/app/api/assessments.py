@@ -9,6 +9,8 @@ from pydantic import BaseModel
 from app.core.database import get_db
 from app.core.auth import require_role
 from app.models.claim import Claim, ClaimStatus, ClaimAssessment
+from app.models.user import User
+from app.services.notifications import send_claim_notification
 
 router = APIRouter()
 
@@ -20,7 +22,7 @@ class AssessmentRequest(BaseModel):
     notes: Optional[str] = None
 
 
-@router.post("/")
+@router.post("")
 async def submit_assessment(
     request: AssessmentRequest,
     db: AsyncSession = Depends(get_db),
@@ -53,6 +55,28 @@ async def submit_assessment(
     }
     claim.status = status_map.get(request.decision, ClaimStatus.AWAITING_REVIEW)
     claim.reviewed_at = datetime.now(timezone.utc)
+
+    # Send email notification to claimant (non-blocking)
+    try:
+        user_result = await db.execute(select(User).where(User.id == claim.claimant_id))
+        claimant = user_result.scalar_one_or_none()
+        if claimant and claimant.email:
+            notification_details = {
+                "damage_summary": claim.damage_type.value if claim.damage_type else "N/A",
+                "severity": claim.severity.value if claim.severity else "N/A",
+                "cost_estimate_min": claim.estimated_cost_min,
+                "cost_estimate_max": claim.estimated_cost_max,
+                "fraud_risk_score": claim.fraud_risk_score,
+                "notes": request.notes or "",
+            }
+            send_claim_notification(
+                email=claimant.email,
+                claim_id=request.claim_id,
+                status=claim.status.value,
+                details=notification_details,
+            )
+    except Exception as e:
+        print(f"⚠️  Failed to send assessment notification: {e}")
 
     return {
         "assessment_id": str(assessment.id),

@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.router import api_router
 from app.core.config import get_settings
@@ -10,6 +13,7 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="AI-powered vehicle damage assessment and fraud detection for insurance claims",
+    redirect_slashes=False,
 )
 
 # CORS
@@ -23,6 +27,11 @@ app.add_middleware(
 
 # Include routes
 app.include_router(api_router)
+
+# Serve uploaded images locally (dev without MinIO)
+uploads_dir = Path("uploads")
+uploads_dir.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 
 @app.on_event("startup")

@@ -42,10 +42,43 @@ async def get_stats(
     flagged = (await db.execute(
         base.where(Claim.status == ClaimStatus.FLAGGED)
     )).scalar() or 0
+    rejected = (await db.execute(
+        base.where(Claim.status == ClaimStatus.REJECTED)
+    )).scalar() or 0
+
+    # Average fraud score (for assessors/admins)
+    avg_fraud = None
+    if role in ("assessor", "admin"):
+        result = await db.execute(
+            select(func.avg(Claim.fraud_risk_score)).where(Claim.fraud_risk_score.isnot(None))
+        )
+        avg_fraud = result.scalar()
+        avg_fraud = round(avg_fraud, 3) if avg_fraud else 0.0
+
+    # Recent claims (last 5)
+    if role == "claimant":
+        recent_query = select(Claim).where(Claim.claimant_id == user_id).order_by(Claim.created_at.desc()).limit(5)
+    else:
+        recent_query = select(Claim).order_by(Claim.created_at.desc()).limit(5)
+
+    recent_result = await db.execute(recent_query)
+    recent_claims = [
+        {
+            "id": str(c.id),
+            "status": c.status.value,
+            "damage_type": c.damage_type.value if c.damage_type else None,
+            "fraud_risk_score": c.fraud_risk_score,
+            "created_at": c.created_at.isoformat() if c.created_at else None,
+        }
+        for c in recent_result.scalars().all()
+    ]
 
     return {
         "total": total,
         "pending": pending,
         "approved": approved,
         "flagged": flagged,
+        "rejected": rejected,
+        "avg_fraud_score": avg_fraud,
+        "recent_claims": recent_claims,
     }

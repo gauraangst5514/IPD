@@ -22,9 +22,11 @@ from sqlalchemy import select
 
 from app.models.claim import Claim, ClaimImage, ClaimStatus, SeverityLevel, DamageType
 from app.models.vehicle import Vehicle
+from app.models.user import User
 from app.models.fraud import FraudFlag
 from app.services.storage import get_storage_service
 from app.services.ml_client import get_ml_client
+from app.services.notifications import send_claim_notification
 
 
 # Map ML primary_damage_type string -> DamageType enum
@@ -64,6 +66,7 @@ async def process_claim(claim_id: str, db: AsyncSession):
 
     vehicle_make = vehicle.make if vehicle else "hyundai"
     vehicle_year = vehicle.year if vehicle else 2022
+    registration_number = vehicle.registration_number if vehicle else ""
     # Derive region from incident location (simplified)
     region = _extract_region(claim.incident_location)
 
@@ -84,6 +87,8 @@ async def process_claim(claim_id: str, db: AsyncSession):
                 vehicle_year=vehicle_year,
                 region=region,
                 claim_id=claim_id,
+                description=claim.description or "",
+                registration_number=registration_number,
             )
 
             # Get annotated image and store it
@@ -163,6 +168,12 @@ async def process_claim(claim_id: str, db: AsyncSession):
         claim.fraud_flags = all_fraud_flags
         claim.processed_at = datetime.now(timezone.utc)
 
+        # Store all detections for the vehicle damage map
+        all_detections = []
+        for r in all_results:
+            all_detections.extend(r.get("detections", []))
+        claim.detections = all_detections
+
         # Set status based on fraud score
         if max_fraud_score > 0.7:
             claim.status = ClaimStatus.FLAGGED
@@ -174,6 +185,28 @@ async def process_claim(claim_id: str, db: AsyncSession):
         claim.processed_at = datetime.now(timezone.utc)
 
     await db.flush()
+
+    # Send email notification (non-blocking, won't fail the processing)
+    try:
+        user_result = await db.execute(select(User).where(User.id == claim.claimant_id))
+        claimant = user_result.scalar_one_or_none()
+        if claimant and claimant.email:
+            notification_details = {
+                "damage_summary": claim.damage_type.value if claim.damage_type else "N/A",
+                "severity": claim.severity.value if claim.severity else "N/A",
+                "cost_estimate_min": claim.estimated_cost_min,
+                "cost_estimate_max": claim.estimated_cost_max,
+                "fraud_risk_score": claim.fraud_risk_score,
+            }
+            send_claim_notification(
+                email=claimant.email,
+                claim_id=claim_id,
+                status=claim.status.value,
+                details=notification_details,
+            )
+    except Exception as e:
+        print(f"⚠️  Failed to send notification for claim {claim_id}: {e}")
+
     return {
         "claim_id": claim_id,
         "status": claim.status.value,

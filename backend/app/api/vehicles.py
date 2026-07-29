@@ -39,7 +39,7 @@ class VehicleResponse(BaseModel):
     insurer: Optional[str]
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=VehicleResponse)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=VehicleResponse)
 async def register_vehicle(
     request: VehicleCreateRequest,
     db: AsyncSession = Depends(get_db),
@@ -84,7 +84,7 @@ async def register_vehicle(
     )
 
 
-@router.get("/", response_model=list[VehicleResponse])
+@router.get("", response_model=list[VehicleResponse])
 async def list_vehicles(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user),

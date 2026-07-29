@@ -1,7 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../lib/api";
-import { AlertTriangle, CheckCircle, XCircle, Thermometer } from "lucide-react";
+import { Download } from "lucide-react";
+import ImageCompareSlider from "../components/ImageCompareSlider";
+import FraudTimeline from "../components/FraudTimeline";
+import VehicleDamageMap from "../components/VehicleDamageMap";
 
 export default function ClaimDetailPage() {
   const { id } = useParams();
@@ -19,9 +22,6 @@ export default function ClaimDetailPage() {
     return <div className="text-red-600">Claim not found</div>;
   }
 
-  const fraudLevel =
-    claim.fraud_risk_score > 0.7 ? "high" : claim.fraud_risk_score > 0.3 ? "medium" : "low";
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
@@ -30,19 +30,40 @@ export default function ClaimDetailPage() {
           <h1 className="text-2xl font-bold text-gray-900">Claim Details</h1>
           <p className="text-sm text-gray-500">ID: {claim.id}</p>
         </div>
-        <span
-          className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
-            claim.status === "approved"
-              ? "bg-green-100 text-green-700"
-              : claim.status === "rejected"
-              ? "bg-red-100 text-red-700"
-              : claim.status === "flagged"
-              ? "bg-orange-100 text-orange-700"
-              : "bg-blue-100 text-blue-700"
-          }`}
-        >
-          {claim.status.replace("_", " ")}
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={async () => {
+              try {
+                const res = await api.get(`/claims/${id}/pdf`, { responseType: "blob" });
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `claim_${claim.id.slice(0, 8)}_report.pdf`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+              } catch {
+                alert("Failed to download PDF");
+              }
+            }}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            Download PDF
+          </button>
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
+              claim.status === "approved"
+                ? "bg-green-100 text-green-700"
+                : claim.status === "rejected"
+                ? "bg-red-100 text-red-700"
+                : claim.status === "flagged"
+                ? "bg-orange-100 text-orange-700"
+                : "bg-blue-100 text-blue-700"
+            }`}
+          >
+            {claim.status.replace("_", " ")}
+          </span>
+        </div>
       </div>
 
       {/* AI Assessment Results */}
@@ -65,6 +86,17 @@ export default function ClaimDetailPage() {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Vehicle Damage Map */}
+      {claim.detections && claim.detections.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <h2 className="text-lg font-semibold mb-4">Damage Breakdown</h2>
+          <VehicleDamageMap
+            detections={claim.detections}
+            severity={claim.severity || "moderate"}
+          />
         </div>
       )}
 
@@ -97,73 +129,59 @@ export default function ClaimDetailPage() {
 
       {/* Fraud Score */}
       {claim.fraud_risk_score !== null && (
-        <div
-          className={`border rounded-xl p-6 ${
-            fraudLevel === "high"
-              ? "bg-red-50 border-red-200"
-              : fraudLevel === "medium"
-              ? "bg-yellow-50 border-yellow-200"
-              : "bg-green-50 border-green-200"
-          }`}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            {fraudLevel === "high" ? (
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-            ) : fraudLevel === "medium" ? (
-              <Thermometer className="w-5 h-5 text-yellow-600" />
-            ) : (
-              <CheckCircle className="w-5 h-5 text-green-600" />
-            )}
-            <h2 className="text-lg font-semibold">Fraud Risk: {fraudLevel.toUpperCase()}</h2>
-          </div>
-          <p className="text-sm">Score: {(claim.fraud_risk_score * 100).toFixed(1)}%</p>
-          {claim.fraud_flags && Object.keys(claim.fraud_flags).length > 0 && (
-            <div className="mt-2 space-y-1">
-              {Object.entries(claim.fraud_flags).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 text-sm">
-                  {value ? (
-                    <XCircle className="w-4 h-4 text-red-500" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  )}
-                  <span className="capitalize">{key.replace(/_/g, " ")}</span>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <h2 className="text-lg font-semibold mb-4">Fraud Risk Analysis</h2>
+          <FraudTimeline
+            fraudScore={claim.fraud_risk_score}
+            fraudFlags={claim.fraud_flags || {}}
+          />
         </div>
       )}
 
       {/* Images with Heatmaps */}
       {claim.images?.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">Images & Heatmaps</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
+          <h2 className="text-lg font-semibold mb-4">Damage Analysis</h2>
+          <div className="grid grid-cols-1 gap-6">
             {claim.images.map((img: { id: string; original_url: string; heatmap_url: string | null; damage_type: string | null; severity: string | null; confidence: number | null }) => (
-              <div key={img.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                  <img
-                    src={img.original_url}
-                    alt="Claim"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
+              <div key={img.id} className="border border-slate-200 rounded-lg overflow-hidden">
+                {img.heatmap_url ? (
+                  /* Comparison slider when both images available */
+                  <ImageCompareSlider
+                    originalSrc={img.original_url}
+                    annotatedSrc={img.heatmap_url}
+                    originalLabel="Original Photo"
+                    annotatedLabel="AI Detection"
                   />
-                </div>
-                {img.heatmap_url && (
-                  <div className="aspect-video bg-gray-100">
+                ) : (
+                  /* Just the original if no heatmap */
+                  <div className="bg-slate-100 p-2">
                     <img
-                      src={img.heatmap_url}
-                      alt="Heatmap"
-                      className="w-full h-full object-cover"
+                      src={img.original_url}
+                      alt="Uploaded damage photo"
+                      className="w-full h-auto max-h-[400px] object-contain rounded"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
                     />
                   </div>
                 )}
-                <div className="p-3 text-sm">
-                  <p className="capitalize">
-                    {img.damage_type} • {img.severity} • {((img.confidence || 0) * 100).toFixed(0)}%
-                  </p>
+                <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className={`badge ${
+                      img.severity === "severe" ? "bg-red-100 text-red-700" :
+                      img.severity === "moderate" ? "bg-amber-100 text-amber-700" :
+                      "bg-emerald-100 text-emerald-700"
+                    }`}>
+                      {img.severity || "—"}
+                    </span>
+                    <span className="text-sm font-medium text-slate-700 capitalize">
+                      {img.damage_type || "Processing"}
+                    </span>
+                  </div>
+                  <span className="text-sm text-slate-500">
+                    {((img.confidence || 0) * 100).toFixed(0)}% confidence
+                  </span>
                 </div>
               </div>
             ))}

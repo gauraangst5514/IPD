@@ -2,6 +2,7 @@ from typing import Optional
 import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
@@ -41,7 +42,7 @@ class ClaimResponse(BaseModel):
         from_attributes = True
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_claim(
     request: ClaimCreateRequest,
     db: AsyncSession = Depends(get_db),
@@ -156,7 +157,7 @@ async def submit_claim(
     return {"id": str(claim.id), "status": claim.status.value, "message": "Claim submitted for AI assessment."}
 
 
-@router.get("/", response_model=list[ClaimResponse])
+@router.get("", response_model=list[ClaimResponse])
 async def list_claims(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user),
@@ -213,8 +214,8 @@ async def get_claim(
     images = [
         {
             "id": str(img.id),
-            "original_url": img.original_url,
-            "heatmap_url": img.heatmap_url,
+            "original_url": f"/uploads/{img.original_url}" if not img.original_url.startswith("http") else img.original_url,
+            "heatmap_url": f"/uploads/{img.heatmap_url}" if img.heatmap_url and not img.heatmap_url.startswith("http") else img.heatmap_url,
             "damage_detected": img.damage_detected,
             "damage_type": img.damage_type.value if img.damage_type else None,
             "severity": img.severity.value if img.severity else None,
@@ -240,7 +241,69 @@ async def get_claim(
         "cost_breakdown": claim.cost_breakdown,
         "fraud_risk_score": claim.fraud_risk_score,
         "fraud_flags": claim.fraud_flags,
+        "detections": claim.detections or [],
         "images": images,
         "created_at": claim.created_at,
         "processed_at": claim.processed_at,
     }
+
+
+@router.get("/{claim_id}/pdf")
+async def download_claim_pdf(
+    claim_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    """Download claim report as PDF."""
+    result = await db.execute(select(Claim).where(Claim.id == uuid.UUID(claim_id)))
+    claim = result.scalar_one_or_none()
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+
+    # Check access
+    if current_user["role"] == "claimant" and str(claim.claimant_id) != current_user["user_id"]:
+        raise HTTPException(status_code=403, detail="Not your claim")
+
+    # Build claim dict for PDF generator
+    images = [
+        {
+            "id": str(img.id),
+            "damage_type": img.damage_type.value if img.damage_type else None,
+            "severity": img.severity.value if img.severity else None,
+            "confidence": img.confidence,
+            "is_manipulated": img.is_manipulated,
+        }
+        for img in (claim.images or [])
+    ]
+
+    claim_data = {
+        "id": str(claim.id),
+        "status": claim.status.value,
+        "description": claim.description,
+        "incident_date": claim.incident_date,
+        "incident_location": claim.incident_location,
+        "damage_type": claim.damage_type.value if claim.damage_type else None,
+        "severity": claim.severity.value if claim.severity else None,
+        "confidence_score": claim.confidence_score,
+        "estimated_cost_min": claim.estimated_cost_min,
+        "estimated_cost_max": claim.estimated_cost_max,
+        "cost_breakdown": claim.cost_breakdown,
+        "fraud_risk_score": claim.fraud_risk_score,
+        "fraud_flags": claim.fraud_flags,
+        "images": images,
+        "created_at": claim.created_at.isoformat() if claim.created_at else None,
+        "processed_at": claim.processed_at.isoformat() if claim.processed_at else None,
+    }
+
+    from app.services.pdf_report import generate_claim_pdf
+    import io as _io
+
+    pdf_bytes = generate_claim_pdf(claim_data)
+
+    return StreamingResponse(
+        _io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=claim_{claim_id[:8]}_report.pdf"
+        },
+    )

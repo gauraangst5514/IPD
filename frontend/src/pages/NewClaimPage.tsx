@@ -189,20 +189,20 @@ export default function NewClaimPage() {
                 placeholder="Registration Number (e.g., MH02AB1234)"
                 value={regNumber}
                 onChange={(e) => setRegNumber(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input"
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
                   placeholder="Make (e.g., Hyundai)"
                   value={make}
                   onChange={(e) => setMake(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="input"
                 />
                 <input
                   placeholder="Model (e.g., Creta)"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="input"
                 />
               </div>
               <input
@@ -210,7 +210,7 @@ export default function NewClaimPage() {
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input"
               />
               <div className="flex gap-2">
                 {vehicles && vehicles.length > 0 && (
@@ -223,7 +223,7 @@ export default function NewClaimPage() {
                 )}
                 <button
                   onClick={handleRegisterVehicle}
-                  className="flex-1 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  className="flex-1 py-2 btn-primary"
                 >
                   Register & Continue
                 </button>
@@ -251,7 +251,7 @@ export default function NewClaimPage() {
                 type="date"
                 value={incidentDate}
                 onChange={(e) => setIncidentDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input"
               />
             </div>
             <div>
@@ -260,13 +260,13 @@ export default function NewClaimPage() {
                 placeholder="e.g., Mumbai, Western Express Highway"
                 value={incidentLocation}
                 onChange={(e) => setIncidentLocation(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input"
               />
             </div>
           </div>
           <button
             onClick={handleCreateClaim}
-            className="w-full py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            className="w-full py-2 btn-primary"
           >
             Continue
           </button>
@@ -316,7 +316,7 @@ export default function NewClaimPage() {
           <button
             onClick={handleUploadAndSubmit}
             disabled={loading || !files.length}
-            className="w-full py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+            className="w-full py-2 btn-primary disabled:opacity-50"
           >
             {loading ? "Uploading & Processing..." : "Submit Claim for AI Assessment"}
           </button>

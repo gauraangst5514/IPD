@@ -35,6 +35,13 @@ class Settings(BaseSettings):
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = "intelliclaim"
 
+    # SMTP Email Notifications
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 0
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = ""
+
     class Config:
         env_file = ".env"
 
