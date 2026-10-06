@@ -4,3 +4,4 @@ from app.models.vehicle import Vehicle
 from app.models.fraud import FraudFlag
 
 __all__ = ["User", "Claim", "ClaimImage", "ClaimAssessment", "Vehicle", "FraudFlag"]
+from app.models.processing import ProcessingAttempt, ImageEvidence

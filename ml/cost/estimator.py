@@ -15,6 +15,7 @@ multi-brand workshop estimates (2024-2026).
 """
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 
 @dataclass
@@ -58,6 +59,8 @@ BASE_REPAIR_COSTS = {
         "moderate": {"parts": 8000,  "labour": 5000,  "paint": 6000,  "misc": 1200},
         "severe":   {"parts": 18000, "labour": 8000,  "paint": 8000,  "misc": 2500},
     },
+    "tire_flat": {s: {"parts": 4000, "labour": 500, "paint": 0, "misc": 200} for s in ("minor", "moderate", "severe")},
+    "lamp_broken": {s: {"parts": 6000, "labour": 800, "paint": 0, "misc": 200} for s in ("minor", "moderate", "severe")},
     "bumper": {
         "minor":    {"parts": 1500,  "labour": 2000,  "paint": 2500,  "misc": 300},
         "moderate": {"parts": 5000,  "labour": 3500,  "paint": 4500,  "misc": 800},
@@ -69,6 +72,8 @@ BASE_REPAIR_COSTS = {
 # VEHICLE SEGMENT MULTIPLIERS
 # Based on actual OEM spare part pricing and authorized workshop rates
 # ═══════════════════════════════════════════════════════════════
+
+BASE_REPAIR_COSTS["glass_shatter"] = BASE_REPAIR_COSTS["shatter"]
 
 VEHICLE_MULTIPLIERS = {
     # Budget segment (₹5-10L on-road)
@@ -122,7 +127,7 @@ REGIONAL_MULTIPLIERS = {
 
 def _age_multiplier(vehicle_year: int) -> float:
     """Parts cost decreases for older vehicles (aftermarket available)."""
-    current_year = 2026
+    current_year = datetime.now(timezone.utc).year
     age = max(0, current_year - vehicle_year)
     if age <= 1:
         return 1.0    # New — OEM parts mandatory for warranty
@@ -315,7 +320,7 @@ class CostEstimationEngine:
             # Map CarDD labels to cost engine types
             cost_type = {
                 "dent": "dent", "scratch": "scratch", "crack": "crack",
-                "glass_shatter": "shatter", "lamp_broken": "panel", "tire_flat": "panel",
+                "glass_shatter": "shatter", "lamp_broken": "lamp_broken", "tire_flat": "tire_flat",
             }.get(damage_type, "dent")
 
             type_area = sum(d["bbox"][2] * d["bbox"][3] for d in dets)

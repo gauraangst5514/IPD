@@ -50,7 +50,7 @@ class DamageInstance:
 
 @dataclass
 class SeverityResult:
-    severity: str  # minor / moderate / severe
+    severity: str | None  # minor / moderate / severe
     score: float   # 0.0 - 1.0 raw severity score
     reasoning: dict  # explainable breakdown
 
@@ -76,7 +76,7 @@ class SeverityEstimator:
         """
         if not detections:
             return SeverityResult(
-                severity="minor",
+                severity=None,
                 score=0.0,
                 reasoning={"note": "No damage detected"},
             )
@@ -131,27 +131,27 @@ class SeverityEstimator:
         return SeverityResult(severity=severity, score=round(score, 4), reasoning=reasoning)
 
     # Maps CarDD damage categories -> cost engine damage types
-    # Cost engine knows: scratch, dent, crack, shatter, bumper, panel
+    # Preserve canonical damage labels through pricing and persistence.
     CARDD_TO_COST_TYPE = {
         "dent": "dent",
         "scratch": "scratch",
         "crack": "crack",
-        "glass_shatter": "shatter",
-        "glass shatter": "shatter",
-        "lamp_broken": "panel",   # lamp replacement priced like a panel component
-        "lamp broken": "panel",
-        "tire_flat": "panel",     # no dedicated tire bucket; treat as panel-level
-        "tire flat": "panel",
+        "glass_shatter": "glass_shatter",
+        "glass shatter": "glass_shatter",
+        "lamp_broken": "lamp_broken",
+        "lamp broken": "lamp_broken",
+        "tire_flat": "tire_flat",
+        "tire flat": "tire_flat",
     }
 
-    def primary_damage_type(self, detections: list[DamageInstance]) -> str:
+    def primary_damage_type(self, detections: list[DamageInstance]) -> str | None:
         """
         Determine the primary damage type for cost estimation.
 
         Returns the cost-engine damage type with the largest total area.
         """
         if not detections:
-            return "dent"
+            return None
 
         # Sum area by type
         type_areas: dict[str, float] = {}

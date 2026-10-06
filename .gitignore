@@ -54,3 +54,7 @@ yolov8s.pt
 backend/.env
 start.sh
 uploads/
+
+.venv-compatible/
+work/
+.pytest_cache/

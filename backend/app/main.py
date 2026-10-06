@@ -2,7 +2,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from shared.request_limits import RequestSizeLimit
 
 from app.api.router import api_router
 from app.core.config import get_settings
@@ -28,10 +28,8 @@ app.add_middleware(
 # Include routes
 app.include_router(api_router)
 
-# Serve uploaded images locally (dev without MinIO)
-uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
+# Bound multipart overhead as well as image bytes before route parsing.
+app.add_middleware(RequestSizeLimit, max_bytes=settings.MAX_UPLOAD_BYTES + 256 * 1024)
 
 
 @app.on_event("startup")
@@ -39,7 +37,7 @@ async def startup_event():
     # Create DB tables (for dev without Alembic migrations)
     from app.core.database import create_tables
     from app.models import User, Claim, ClaimImage, ClaimAssessment, Vehicle, FraudFlag  # noqa: F401
-    await create_tables()
+    # All environments apply Alembic migrations explicitly before startup.
     print(f"🚀 {settings.APP_NAME} v{settings.APP_VERSION} starting...")
 
 

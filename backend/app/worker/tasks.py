@@ -1,44 +1,23 @@
-"""
-Celery Tasks
-
-Background tasks for processing claims through the ML pipeline.
-"""
-
+"""Broker deliveries refer to durable attempt IDs, never mutable claim IDs."""
 import asyncio
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.pool import NullPool
+from app.core.config import get_settings
 from app.worker.celery_app import celery_app
+from app.services.processing_jobs import run_attempt
 
 
-@celery_app.task(bind=True, name="process_claim", max_retries=2)
-def process_claim_task(self, claim_id: str):
-    """
-    Process a claim through the full ML pipeline.
-
-    This task:
-    1. Loads claim images from storage
-    2. Sends each to the ML service for analysis
-    3. Stores annotated images
-    4. Updates the claim record with results
-    5. Sets status to awaiting_review (or flagged if fraud detected)
-    """
+async def _process_attempt_async(attempt_id):
+    # A Celery invocation owns its event loop and connections. Never reuse an
+    # asyncpg connection pooled by a previous asyncio.run or a parent process.
+    engine = create_async_engine(get_settings().DATABASE_URL, poolclass=NullPool)
+    factory = async_sessionmaker(engine, expire_on_commit=False)
     try:
-        # We need to run async code from a sync Celery task
-        asyncio.run(_process_claim_async(claim_id))
-    except Exception as exc:
-        print(f"❌ Task failed for claim {claim_id}: {exc}")
-        # Retry with exponential backoff
-        self.retry(exc=exc, countdown=30 * (self.request.retries + 1))
+        return await run_attempt(attempt_id, factory)
+    finally:
+        await engine.dispose()
 
 
-async def _process_claim_async(claim_id: str):
-    """Async wrapper for the claim processing pipeline."""
-    from app.core.database import async_session
-    from app.services.claim_processor import process_claim
-
-    async with async_session() as db:
-        try:
-            result = await process_claim(claim_id, db)
-            await db.commit()
-            print(f"✅ Claim {claim_id} processed: {result}")
-        except Exception:
-            await db.rollback()
-            raise
+@celery_app.task(name='process_attempt', acks_late=True, reject_on_worker_lost=True)
+def process_claim_task(attempt_id):
+    return asyncio.run(_process_attempt_async(attempt_id))

@@ -3,6 +3,11 @@ from typing import Optional
 
 from jose import JWTError, jwt
 import bcrypt
+import uuid
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import get_db
+from app.models.user import User
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
@@ -25,6 +30,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+    to_encode.setdefault("ver", 0)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
@@ -41,15 +47,20 @@ def decode_access_token(token: str) -> dict:
         )
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db),
+) -> dict:
     payload = decode_access_token(token)
-    user_id = payload.get("sub")
-    if user_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload",
-        )
-    return {"user_id": user_id, "role": payload.get("role", "claimant")}
+    try:
+        user_id = uuid.UUID(payload.get("sub", ""))
+    except (ValueError, TypeError, AttributeError):
+        raise HTTPException(status_code=401, detail="Invalid token subject")
+    user = (await db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    if user is None or not user.is_active:
+        raise HTTPException(status_code=401, detail="Account unavailable")
+    if type(payload.get("ver")) is not int or payload["ver"] != user.token_version:
+        raise HTTPException(status_code=401, detail="Session revoked; sign in again")
+    return {"user_id": str(user.id), "role": user.role.value}
 
 
 from typing import List

@@ -26,8 +26,10 @@ celery_app.conf.update(
     timezone="Asia/Kolkata",
     enable_utc=True,
     task_track_started=True,
-    task_time_limit=300,  # 5 min max per task
-    task_soft_time_limit=240,
+    broker_connection_timeout=5,
+    task_publish_retry=False,
+    task_time_limit=2100,  # Bounded 12-image processing run
+    task_soft_time_limit=2040,
     worker_prefetch_multiplier=1,  # One task at a time (ML is memory-heavy)
 )
 

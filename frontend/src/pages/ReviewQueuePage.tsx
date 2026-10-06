@@ -68,7 +68,7 @@ export default function ReviewQueuePage() {
                           : "bg-green-100 text-green-700"
                       }`}
                     >
-                      Risk: {(claim.fraud_risk_score * 100).toFixed(0)}%
+                      Review signal: {(claim.fraud_risk_score * 100).toFixed(0)}/100
                     </span>
                   )}
                   <ArrowRight className="w-4 h-4 text-gray-400" />

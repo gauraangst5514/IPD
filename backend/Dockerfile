@@ -1,22 +1,9 @@
-FROM python:3.11-slim
-
+FROM python:3.12-slim-bookworm
 WORKDIR /app
-
-# Install system deps
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev gcc && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install Python deps
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir aiosqlite bcrypt email-validator asyncpg
-
-COPY . .
-
-# Create uploads directory
-RUN mkdir -p uploads
-
-EXPOSE 8000
-
+RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev gcc && rm -rf /var/lib/apt/lists/*
+COPY backend/requirements.txt /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
+COPY backend/ /app/backend/
+COPY shared/ /app/shared/
+ENV PYTHONPATH=/app/backend:/app
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

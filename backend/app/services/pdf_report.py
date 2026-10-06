@@ -116,7 +116,7 @@ def generate_claim_pdf(claim: dict, images: list[dict] = None) -> bytes:
         assessment_data = [
             ["Damage Type", (claim.get("damage_type") or "").title()],
             ["Severity", (claim.get("severity") or "").title()],
-            ["Confidence", f"{(claim.get('confidence_score') or 0) * 100:.1f}%"],
+            ["Detector score (uncalibrated)", "Unavailable" if claim.get("detector_confidence") is None else f"{claim['detector_confidence'] * 100:.1f}%"],
         ]
 
         assess_table = Table(assessment_data, colWidths=[4.5 * cm, 12 * cm])
@@ -164,7 +164,7 @@ def generate_claim_pdf(claim: dict, images: list[dict] = None) -> bytes:
         fraud_color = RED if fraud_score > 0.7 else ORANGE if fraud_score > 0.3 else GREEN
 
         fraud_data = [
-            ["Overall Risk", f"{fraud_level} ({fraud_score * 100:.1f}%)"],
+            ["Overall Risk", f"{fraud_level} ({fraud_score * 100:.1f}/100 heuristic)"],
         ]
 
         fraud_flags = claim.get("fraud_flags") or {}
@@ -193,7 +193,7 @@ def generate_claim_pdf(claim: dict, images: list[dict] = None) -> bytes:
                 str(i),
                 (img.get("damage_type") or "—").title(),
                 (img.get("severity") or "—").title(),
-                f"{(img.get('confidence') or 0) * 100:.0f}%",
+                "Unavailable" if img.get("detector_confidence") is None else f"{img['detector_confidence'] * 100:.0f}%",
                 "Yes" if img.get("is_manipulated") else "No",
             ])
 

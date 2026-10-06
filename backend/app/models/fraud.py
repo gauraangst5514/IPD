@@ -12,6 +12,7 @@ class FraudFlag(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
     claim_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("claims.id"), nullable=False)
+    attempt_id: Mapped[uuid.UUID] = mapped_column(GUID(), nullable=True, index=True)
     flag_type: Mapped[str] = mapped_column(String(50), nullable=False)
     severity: Mapped[str] = mapped_column(String(20), nullable=False)
     confidence: Mapped[float] = mapped_column(Float, nullable=False)

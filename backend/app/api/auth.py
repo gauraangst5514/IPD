@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, Literal
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.core.database import get_db
 from app.core.auth import hash_password, verify_password, create_access_token
@@ -14,10 +14,18 @@ router = APIRouter()
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    password: str
-    full_name: str
+    password: str = Field(min_length=12, max_length=72)
+    full_name: str = Field(min_length=1, max_length=255)
     phone: Optional[str] = None
-    role: UserRole = UserRole.CLAIMANT
+    role: Literal[UserRole.CLAIMANT] = UserRole.CLAIMANT
+
+
+    @field_validator("password")
+    @classmethod
+    def bcrypt_byte_limit(cls, value):
+        if len(value.encode("utf-8")) > 72:
+            raise ValueError("Password must be at most 72 UTF-8 bytes")
+        return value
 
 
 class AuthResponse(BaseModel):
@@ -43,12 +51,12 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
         hashed_password=hash_password(request.password),
         full_name=request.full_name,
         phone=request.phone,
-        role=request.role,
+        role=UserRole.CLAIMANT,
     )
     db.add(user)
     await db.flush()
 
-    token = create_access_token({"sub": str(user.id), "role": user.role.value})
+    token = create_access_token({"sub": str(user.id), "role": user.role.value, "ver": user.token_version})
     return AuthResponse(
         access_token=token,
         user_id=str(user.id),
@@ -76,7 +84,7 @@ async def login(
             detail="Account is disabled",
         )
 
-    token = create_access_token({"sub": str(user.id), "role": user.role.value})
+    token = create_access_token({"sub": str(user.id), "role": user.role.value, "ver": user.token_version})
     return AuthResponse(
         access_token=token,
         user_id=str(user.id),

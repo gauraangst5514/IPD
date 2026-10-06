@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import String, DateTime, Enum as SAEnum
+from sqlalchemy import Integer, String, DateTime, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 import enum
 
@@ -26,4 +26,5 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
+    token_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True)

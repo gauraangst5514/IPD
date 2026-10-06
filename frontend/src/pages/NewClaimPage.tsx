@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../lib/api";
@@ -19,6 +19,7 @@ export default function NewClaimPage() {
   const [description, setDescription] = useState("");
   const [incidentDate, setIncidentDate] = useState("");
   const [incidentLocation, setIncidentLocation] = useState("");
+  const uploaded = useRef(new Set<File>());
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -95,18 +96,24 @@ export default function NewClaimPage() {
     setError("");
 
     try {
+      if (files.length > 12) throw new Error("Choose at most 12 photos");
       for (const file of files) {
+        if (uploaded.current.has(file)) continue;
+        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+          throw new Error("Use JPEG, PNG or WebP photos no larger than 10 MiB");
+        }
         const formData = new FormData();
         formData.append("file", file);
         await api.post(`/claims/${claimId}/images`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
+        uploaded.current.add(file);
       }
       await api.post(`/claims/${claimId}/submit`);
       navigate(`/claims/${claimId}`);
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } };
-      setError(axiosErr.response?.data?.detail || "Failed to upload images");
+      setError(typeof axiosErr.response?.data?.detail === "string" ? axiosErr.response.data.detail : err instanceof Error ? err.message : "Failed to upload images");
     } finally {
       setLoading(false);
     }
@@ -288,15 +295,15 @@ export default function NewClaimPage() {
             <input
               type="file"
               multiple
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               onChange={(e) => setFiles(Array.from(e.target.files || []))}
               className="hidden"
               id="file-upload"
             />
             <label htmlFor="file-upload" className="cursor-pointer">
               <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-              <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB each</p>
+              <p className="text-sm text-gray-600">Choose damage photos</p>
+              <p className="text-xs text-gray-400 mt-1">JPEG, PNG or WebP, up to 10 MiB each; maximum 12 photos</p>
             </label>
           </div>
 

@@ -8,6 +8,7 @@ This is the primary inference entry point used by the ML service.
 """
 
 import io
+import hashlib
 from pathlib import Path
 from typing import Optional
 
@@ -31,10 +32,19 @@ CLASS_NAMES = {
 }
 
 
+class ModelUnavailableError(RuntimeError):
+    """No compatible damage model is available; inference must abstain."""
+
+
 class DamageDetector:
     """YOLOv8-based damage detector with severity estimation."""
 
     def __init__(self, weights_path: str = DEFAULT_WEIGHTS, device: str = "auto", conf: float = 0.20, iou: float = 0.5):
+        selected = Path(weights_path)
+        if not selected.is_file() and weights_path == DEFAULT_WEIGHTS:
+            selected = Path(FALLBACK_WEIGHTS)
+        if not selected.is_file():
+            raise ModelUnavailableError("Trained CarDD damage weights are unavailable")
         from ultralytics import YOLO
 
         self.conf = conf
@@ -54,20 +64,18 @@ class DamageDetector:
                 device = "cpu"
         self.device = device
 
-        # Load model — try v2 first, then v1 fallback, then base pretrained
-        if Path(weights_path).exists():
-            self.model = YOLO(weights_path)
-            self.trained = True
-            print(f"✅ Loaded fine-tuned CarDD model: {weights_path}")
-        elif Path(FALLBACK_WEIGHTS).exists():
-            self.model = YOLO(FALLBACK_WEIGHTS)
-            self.trained = True
-            print(f"✅ Loaded fallback CarDD model: {FALLBACK_WEIGHTS}")
-        else:
-            self.model = YOLO("yolov8m.pt")
-            self.trained = False
-            print(f"⚠️  No fine-tuned weights found. Using base YOLOv8m "
-                  f"(will not detect car damage correctly until trained).")
+        self.model = YOLO(str(selected))
+        names = self.model.names
+        if isinstance(names, list):
+            names = dict(enumerate(names))
+        normalized = {int(k): str(v).replace(" ", "_") for k, v in names.items()}
+        if normalized != CLASS_NAMES:
+            raise ModelUnavailableError("Damage model class metadata does not match CarDD labels")
+        self.trained = True
+        with selected.open('rb') as handle:
+            digest = hashlib.file_digest(handle, 'sha256').hexdigest()
+        self.provenance = {'sha256': digest, 'artifact': selected.name,
+                           'classes': CLASS_NAMES, 'validation': 'not_established_by_loading'}
 
     def detect(self, image_bytes: bytes) -> dict:
         """
@@ -97,32 +105,8 @@ class DamageDetector:
             verbose=False,
         )
 
-        # Also run at a second scale for small/large damage coverage
-        results_large = self.model.predict(
-            source=img_array,
-            conf=self.conf,
-            iou=self.iou,
-            device=self.device,
-            imgsz=1024,       # Even larger for fine detail
-            augment=False,
-            verbose=False,
-        )
-
-        # Merge detections: keep the higher confidence prediction for overlapping boxes
+        # Use a single unmodified model score until fusion/calibration is evaluated.
         result = results[0]
-        result_large = results_large[0]
-
-        # Combine boxes — use the primary result for visualization
-        # but boost confidence with confirmations from the large-scale run
-        confirmed_indices = set()
-        if len(result.boxes) > 0 and len(result_large.boxes) > 0:
-            for i, box in enumerate(result.boxes):
-                box_xyxy = box.xyxy[0].tolist()
-                for box2 in result_large.boxes:
-                    box2_xyxy = box2.xyxy[0].tolist()
-                    if self._iou(box_xyxy, box2_xyxy) > 0.3:
-                        confirmed_indices.add(i)
-                        break
 
         # Parse detections
         instances: list[DamageInstance] = []
@@ -131,10 +115,6 @@ class DamageDetector:
         for i, box in enumerate(result.boxes):
             cls_idx = int(box.cls[0].item())
             confidence = float(box.conf[0].item())
-
-            # Boost confidence for detections confirmed at multiple scales
-            if i in confirmed_indices:
-                confidence = min(0.99, confidence * 1.2)  # 20% boost, capped at 0.99
 
             # YOLO gives xywhn (normalized center format)
             xywhn = box.xywhn[0].tolist()  # [x_center, y_center, w, h]

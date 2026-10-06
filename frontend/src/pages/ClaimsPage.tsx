@@ -17,6 +17,8 @@ interface Claim {
 
 const statusColors: Record<string, string> = {
   submitted: "bg-gray-100 text-gray-700",
+  processing_failed: "bg-red-100 text-red-700",
+  partial_processing: "bg-orange-100 text-orange-700",
   processing: "bg-blue-100 text-blue-700",
   awaiting_review: "bg-yellow-100 text-yellow-700",
   approved: "bg-green-100 text-green-700",

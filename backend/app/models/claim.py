@@ -12,6 +12,8 @@ from app.core.types import GUID
 class ClaimStatus(str, enum.Enum):
     SUBMITTED = "submitted"
     PROCESSING = "processing"
+    PROCESSING_FAILED = "processing_failed"
+    PARTIAL_PROCESSING = "partial_processing"
     AWAITING_REVIEW = "awaiting_review"
     APPROVED = "approved"
     REJECTED = "rejected"
@@ -41,6 +43,8 @@ class Claim(Base):
     id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
     claimant_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("users.id"), nullable=False)
     vehicle_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("vehicles.id"), nullable=False)
+    current_attempt_id: Mapped[uuid.UUID] = mapped_column(GUID(), nullable=True, index=True)
+    review_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
     assigned_assessor_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("users.id"), nullable=True)
 
     description: Mapped[str] = mapped_column(Text, nullable=True)
@@ -48,6 +52,10 @@ class Claim(Base):
     incident_location: Mapped[str] = mapped_column(String(500), nullable=True)
     status: Mapped[ClaimStatus] = mapped_column(SAEnum(ClaimStatus), default=ClaimStatus.SUBMITTED)
 
+    analysis_outcome: Mapped[str] = mapped_column(String(32), nullable=True)
+    detector_confidence: Mapped[float] = mapped_column(Float, nullable=True)
+    severity_score: Mapped[float] = mapped_column(Float, nullable=True)
+    checks: Mapped[list] = mapped_column(JSON, nullable=True)
     damage_type: Mapped[DamageType] = mapped_column(SAEnum(DamageType), nullable=True)
     severity: Mapped[SeverityLevel] = mapped_column(SAEnum(SeverityLevel), nullable=True)
     confidence_score: Mapped[float] = mapped_column(Float, nullable=True)
@@ -78,13 +86,21 @@ class ClaimImage(Base):
     original_url: Mapped[str] = mapped_column(String(500), nullable=False)
     heatmap_url: Mapped[str] = mapped_column(String(500), nullable=True)
 
-    file_hash: Mapped[str] = mapped_column(String(64), nullable=True)
+    file_hash: Mapped[str] = mapped_column(String(64), nullable=True, index=True)
+    processing_status: Mapped[str] = mapped_column(String(24), nullable=False, default="pending", server_default="pending")
+    processing_error: Mapped[str] = mapped_column(String(80), nullable=True)
+    annotation_error: Mapped[str] = mapped_column(String(80), nullable=True)
+    duplicate_evidence: Mapped[dict] = mapped_column(JSON, nullable=True)
     exif_data: Mapped[dict] = mapped_column(JSON, nullable=True)
     file_size_bytes: Mapped[int] = mapped_column(Integer, nullable=True)
     image_width: Mapped[int] = mapped_column(Integer, nullable=True)
     image_height: Mapped[int] = mapped_column(Integer, nullable=True)
 
     damage_detected: Mapped[bool] = mapped_column(nullable=True)
+    analysis_outcome: Mapped[str] = mapped_column(String(32), nullable=True)
+    detector_confidence: Mapped[float] = mapped_column(Float, nullable=True)
+    severity_score: Mapped[float] = mapped_column(Float, nullable=True)
+    checks: Mapped[list] = mapped_column(JSON, nullable=True)
     damage_type: Mapped[DamageType] = mapped_column(SAEnum(DamageType), nullable=True)
     severity: Mapped[SeverityLevel] = mapped_column(SAEnum(SeverityLevel), nullable=True)
     confidence: Mapped[float] = mapped_column(Float, nullable=True)

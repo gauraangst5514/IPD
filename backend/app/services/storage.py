@@ -12,6 +12,7 @@ import hashlib
 from pathlib import Path
 
 import boto3
+from botocore.config import Config
 from botocore.exceptions import ClientError
 
 from app.core.config import get_settings
@@ -34,11 +35,14 @@ class StorageService:
                 aws_access_key_id=settings.S3_ACCESS_KEY,
                 aws_secret_access_key=settings.S3_SECRET_KEY,
                 region_name="us-east-1",
+                config=Config(connect_timeout=5, read_timeout=30, retries={"max_attempts": 2}),
             )
             self.bucket = settings.S3_BUCKET
             self._ensure_bucket()
             self.use_local = False
         except Exception:
+            if settings.APP_ENV != "development":
+                raise
             print("⚠️  MinIO/S3 not available — using local file storage")
 
     def _ensure_bucket(self):

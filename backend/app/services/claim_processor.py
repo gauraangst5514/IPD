@@ -1,235 +1,132 @@
-"""
-Claim Processing Service
-
-Orchestrates the full pipeline when a claim is submitted:
-1. Fetch each uploaded image from storage
-2. Call ML service for analysis
-3. Store annotated images (with boxes)
-4. Aggregate results across all images
-5. Update the claim with final damage/severity/cost/fraud scores
-6. Set claim status to awaiting_review
-
-This can be called synchronously (for small claims) or dispatched
-via Celery for async processing.
-"""
-
-import uuid
-from datetime import datetime, timezone
-from typing import Optional
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-
-from app.models.claim import Claim, ClaimImage, ClaimStatus, SeverityLevel, DamageType
-from app.models.vehicle import Vehicle
-from app.models.user import User
-from app.models.fraud import FraudFlag
+"""Image analysis and projections. Database leases live in processing_jobs."""
+import asyncio
+import base64
+import binascii
+from collections import Counter
+import httpx
+from shared.contracts import AnalysisResult
+from app.models.claim import ClaimStatus, DamageType, SeverityLevel
 from app.services.storage import get_storage_service
 from app.services.ml_client import get_ml_client
-from app.services.notifications import send_claim_notification
+
+DAMAGE_TYPE_MAP = {kind.value: kind for kind in DamageType}
+SEVERITY_MAP = {level.value: level for level in SeverityLevel}
 
 
-# Map ML primary_damage_type string -> DamageType enum
-DAMAGE_TYPE_MAP = {
-    "dent": DamageType.DENT,
-    "scratch": DamageType.SCRATCH,
-    "crack": DamageType.CRACK,
-    "shatter": DamageType.GLASS_SHATTER,
-    "panel": DamageType.LAMP_BROKEN,
-}
-
-SEVERITY_MAP = {
-    "minor": SeverityLevel.MINOR,
-    "moderate": SeverityLevel.MODERATE,
-    "severe": SeverityLevel.SEVERE,
-}
+def _extract_region(location):
+    value = (location or '').lower()
+    cities = ['mumbai', 'delhi', 'bangalore', 'bengaluru', 'chennai', 'pune', 'hyderabad',
+              'kolkata', 'ahmedabad', 'jaipur', 'lucknow', 'surat', 'indore', 'nagpur', 'thane']
+    return next((city for city in cities if city in value), 'default')
 
 
-async def process_claim(claim_id: str, db: AsyncSession):
-    """
-    Run the full ML pipeline on a submitted claim.
-
-    This is the main orchestration function.
-    """
-    storage = get_storage_service()
-    ml_client = get_ml_client()
-
-    # Load claim with images
-    result = await db.execute(select(Claim).where(Claim.id == uuid.UUID(claim_id)))
-    claim = result.scalar_one_or_none()
-    if not claim:
-        raise ValueError(f"Claim {claim_id} not found")
-
-    # Load vehicle info (for cost estimation)
-    vehicle_result = await db.execute(select(Vehicle).where(Vehicle.id == claim.vehicle_id))
-    vehicle = vehicle_result.scalar_one_or_none()
-
-    vehicle_make = vehicle.make if vehicle else "hyundai"
-    vehicle_year = vehicle.year if vehicle else 2022
-    registration_number = vehicle.registration_number if vehicle else ""
-    # Derive region from incident location (simplified)
-    region = _extract_region(claim.incident_location)
-
-    # Process each image
-    all_results = []
-    max_fraud_score = 0.0
-    all_fraud_flags = {}
-
-    for img in claim.images:
-        try:
-            # Download from storage
-            image_bytes = storage.download_image(img.original_url)
-
-            # Call ML service
-            analysis = await ml_client.analyze_image(
-                image_bytes=image_bytes,
-                vehicle_make=vehicle_make,
-                vehicle_year=vehicle_year,
-                region=region,
-                claim_id=claim_id,
-                description=claim.description or "",
-                registration_number=registration_number,
-            )
-
-            # Get annotated image and store it
-            annotated_bytes = await ml_client.get_annotated_image(image_bytes)
-            heatmap_key = storage.upload_heatmap(annotated_bytes, claim_id, str(img.id))
-
-            # Update image record
-            img.damage_detected = analysis["damage_detected"]
-            img.confidence = analysis.get("severity_score", 0.0)
-            img.heatmap_url = heatmap_key
-            img.is_manipulated = analysis["fraud_score"] > 0.5
-            img.manipulation_score = analysis["fraud_score"]
-
-            # Map damage type
-            primary_type = analysis.get("primary_damage_type", "dent")
-            if primary_type in DAMAGE_TYPE_MAP:
-                img.damage_type = DAMAGE_TYPE_MAP[primary_type]
-
-            # Map severity
-            severity_str = analysis.get("severity", "moderate")
-            if severity_str in SEVERITY_MAP:
-                img.severity = SEVERITY_MAP[severity_str]
-
-            all_results.append(analysis)
-
-            # Track fraud
-            if analysis["fraud_score"] > max_fraud_score:
-                max_fraud_score = analysis["fraud_score"]
-            for flag in analysis.get("fraud_flags", []):
-                all_fraud_flags[flag] = True
-
-            # Create fraud flag records
-            for flag in analysis.get("fraud_flags", []):
-                fraud_record = FraudFlag(
-                    claim_id=uuid.UUID(claim_id),
-                    flag_type=flag,
-                    severity="high" if analysis["fraud_score"] > 0.7 else "medium",
-                    confidence=analysis["fraud_score"],
-                    description=f"Image {img.id}: {flag}",
-                )
-                db.add(fraud_record)
-
-        except Exception as e:
-            print(f"⚠️  Failed to process image {img.id}: {e}")
-            continue
-
-    # Aggregate results across all images
-    if all_results:
-        # Use the worst severity and highest cost across images
-        severities = [r["severity"] for r in all_results]
-        severity_order = {"severe": 3, "moderate": 2, "minor": 1}
-        worst_severity = max(severities, key=lambda s: severity_order.get(s, 0))
-
-        # Use the highest cost estimate
-        max_cost_min = max(r["cost_estimate_min"] for r in all_results)
-        max_cost_max = max(r["cost_estimate_max"] for r in all_results)
-
-        # Use the most common damage type
-        from collections import Counter
-        type_counts = Counter(r["primary_damage_type"] for r in all_results)
-        primary_type = type_counts.most_common(1)[0][0]
-
-        # Confidence is average severity score
-        avg_confidence = sum(r["severity_score"] for r in all_results) / len(all_results)
-
-        # Cost breakdown from the highest-cost image
-        best_result = max(all_results, key=lambda r: r["cost_estimate_max"])
-
-        # Update claim
-        claim.severity = SEVERITY_MAP.get(worst_severity, SeverityLevel.MODERATE)
-        claim.damage_type = DAMAGE_TYPE_MAP.get(primary_type, DamageType.DENT)
-        claim.confidence_score = avg_confidence
-        claim.estimated_cost_min = max_cost_min
-        claim.estimated_cost_max = max_cost_max
-        claim.cost_breakdown = best_result.get("cost_breakdown")
-        claim.fraud_risk_score = max_fraud_score
-        claim.fraud_flags = all_fraud_flags
-        claim.processed_at = datetime.now(timezone.utc)
-
-        # Store all detections for the vehicle damage map
-        all_detections = []
-        for r in all_results:
-            all_detections.extend(r.get("detections", []))
-        claim.detections = all_detections
-
-        # Set status based on fraud score
-        if max_fraud_score > 0.7:
-            claim.status = ClaimStatus.FLAGGED
-        else:
-            claim.status = ClaimStatus.AWAITING_REVIEW
-    else:
-        # No images could be processed
-        claim.status = ClaimStatus.AWAITING_REVIEW
-        claim.processed_at = datetime.now(timezone.utc)
-
-    await db.flush()
-
-    # Send email notification (non-blocking, won't fail the processing)
+async def analyze_image(image, claim, *, storage, client, artifact_suffix):
+    """Return a safe outcome; transient failures never become successful assessments."""
+    evidence = image['duplicate_evidence']
+    payload = {'image_id': image['id'], 'result': None, 'error': None,
+               'annotation_error': None, 'heatmap_key': None, 'duplicate_evidence': evidence}
     try:
-        user_result = await db.execute(select(User).where(User.id == claim.claimant_id))
-        claimant = user_result.scalar_one_or_none()
-        if claimant and claimant.email:
-            notification_details = {
-                "damage_summary": claim.damage_type.value if claim.damage_type else "N/A",
-                "severity": claim.severity.value if claim.severity else "N/A",
-                "cost_estimate_min": claim.estimated_cost_min,
-                "cost_estimate_max": claim.estimated_cost_max,
-                "fraud_risk_score": claim.fraud_risk_score,
-            }
-            send_claim_notification(
-                email=claimant.email,
-                claim_id=claim_id,
-                status=claim.status.value,
-                details=notification_details,
-            )
-    except Exception as e:
-        print(f"⚠️  Failed to send notification for claim {claim_id}: {e}")
+        content = await asyncio.to_thread(storage.download_image, image['key'])
+        analysis = await client.analyze_image(
+            image_bytes=content, vehicle_make=claim['make'], vehicle_year=claim['year'],
+            region=_extract_region(claim['location']), claim_id=claim['id'],
+            description=claim['description'] or '', registration_number=claim['registration'],
+        )
+        result = AnalysisResult.model_validate(analysis).model_dump()
+        annotation = result.pop('annotated_image_base64', None)
+        result['checks'] = [c for c in result['checks'] if c['id'] != 'duplicate']
+        result['checks'].append({
+            'id': 'duplicate', 'method': 'sha256_exact_v1',
+            'status': 'unavailable' if not evidence['available'] else 'flagged' if evidence['match_count'] else 'passed',
+            'detail': 'Exact-file reuse in this customer’s images; not a fraud verdict' if evidence['match_count'] else 'No exact match within this customer’s stored images' if evidence['available'] else 'File hash unavailable',
+        })
+        payload['result'] = result
+        if annotation:
+            try:
+                raw = base64.b64decode(annotation, validate=True)
+                if len(raw) > 10 * 1024 * 1024:
+                    raise ValueError('Annotation too large')
+                payload['heatmap_key'] = await asyncio.to_thread(
+                    storage.upload_heatmap, raw, claim['id'], image['id'] + '-' + artifact_suffix,
+                )
+            except Exception:  # Optional previews must not invalidate successful analysis.
+                payload['annotation_error'] = 'annotation_unavailable'
+        else:
+            payload['annotation_error'] = 'annotation_unavailable'
+    except (httpx.HTTPError, ValueError, OSError, RuntimeError, TimeoutError):
+        payload['error'] = 'analysis_unavailable'
+    return payload
 
-    return {
-        "claim_id": claim_id,
-        "status": claim.status.value,
-        "images_processed": len(all_results),
-    }
+
+def aggregate_checks(results):
+    keys = sorted({check['id'] for result in results for check in result['checks']})
+    ranking = {'flagged': 5, 'inconclusive': 4, 'unavailable': 3, 'passed': 2, 'not_applicable': 1}
+    checks = []
+    for key in keys:
+        values = [check for result in results for check in result['checks'] if check['id'] == key]
+        chosen = max(values, key=lambda check: ranking[check['status']])
+        checks.append({**chosen, 'images_checked': len(values)})
+    return checks
 
 
-def _extract_region(location: Optional[str]) -> str:
-    """
-    Extract a city/region from the incident location string.
-    Falls back to 'default' if not recognized.
-    """
-    if not location:
-        return "default"
-
-    location_lower = location.lower()
-    known_cities = [
-        "mumbai", "delhi", "bangalore", "bengaluru", "chennai",
-        "pune", "hyderabad", "kolkata", "ahmedabad", "jaipur",
-        "lucknow", "surat", "indore", "nagpur", "thane",
-    ]
-    for city in known_cities:
-        if city in location_lower:
-            return city
-
-    return "default"
+def project(claim, images_by_id, outcomes):
+    """Update the current projection only after the caller has fenced the attempt."""
+    for field in ('damage_type', 'severity', 'confidence_score', 'detector_confidence', 'severity_score',
+                  'estimated_cost_min', 'estimated_cost_max', 'cost_breakdown', 'fraud_risk_score',
+                  'fraud_flags', 'detections', 'analysis_outcome', 'checks'):
+        setattr(claim, field, None)
+    results = []
+    for outcome in outcomes:
+        image = images_by_id[outcome['image_id']]
+        for field in ('damage_type', 'severity', 'confidence', 'detector_confidence', 'severity_score',
+                      'damage_detected', 'is_manipulated', 'manipulation_score', 'heatmap_url', 'analysis_outcome', 'checks'):
+            setattr(image, field, None)
+        image.duplicate_evidence = outcome['duplicate_evidence']
+        image.is_duplicate = bool(outcome['duplicate_evidence']['match_count'])
+        image.processing_error = outcome['error']
+        image.annotation_error = outcome['annotation_error']
+        image.processing_status = 'failed' if outcome['error'] else 'completed'
+        result = outcome['result']
+        if result is None:
+            continue
+        results.append(result)
+        image.analysis_outcome = result['outcome']
+        image.damage_detected = result['damage_detected']
+        image.damage_type = DAMAGE_TYPE_MAP.get(result['primary_damage_type'])
+        image.severity = SEVERITY_MAP.get(result['severity'])
+        image.detector_confidence = result['detector_confidence']
+        image.severity_score = result['severity_score']
+        image.checks = result['checks']
+        image.heatmap_url = outcome['heatmap_key']
+        image.manipulation_score = result['manipulation_score']
+        image.is_manipulated = None  # Heuristic flags cannot establish image tampering.
+    if not results:
+        claim.status = ClaimStatus.PROCESSING_FAILED
+        return
+    damaged = [result for result in results if result['damage_detected']]
+    if damaged:
+        claim.damage_type = DAMAGE_TYPE_MAP[Counter(r['primary_damage_type'] for r in damaged).most_common(1)[0][0]]
+        claim.severity = max((SEVERITY_MAP[r['severity']] for r in damaged), key=lambda level: {'minor': 0, 'moderate': 1, 'severe': 2}[level.value])
+        scores = [r['detector_confidence'] for r in damaged if r['detector_confidence'] is not None]
+        claim.detector_confidence = sum(scores) / len(scores) if scores else None
+        severity_scores = [r['severity_score'] for r in damaged if r['severity_score'] is not None]
+        claim.severity_score = max(severity_scores) if severity_scores else None
+        priced = [r for r in damaged if r['cost_estimate_max'] is not None]
+        if priced:
+            best = max(priced, key=lambda r: r['cost_estimate_max'])
+            claim.estimated_cost_min = best['cost_estimate_min']
+            claim.estimated_cost_max = best['cost_estimate_max']
+            claim.cost_breakdown = {**best['cost_breakdown'], 'aggregation': 'max_image_heuristic',
+                                    'limitation': 'Not a sum of unique repair operations across views'}
+    claim.analysis_outcome = 'damage_detected' if damaged else 'no_visible_damage'
+    if any(r['outcome'] == 'insufficient_evidence' for r in results):
+        claim.analysis_outcome = 'insufficient_evidence'
+    claim.fraud_risk_score = max(r['fraud_score'] for r in results)
+    claim.fraud_flags = {flag: True for r in results for flag in r['fraud_flags']}
+    claim.checks = aggregate_checks(results)
+    claim.detections = [{**d, 'image_id': outcome['image_id']} for outcome in outcomes
+                        if outcome['result'] for d in outcome['result']['detections']]
+    if len(results) != len(outcomes) or claim.analysis_outcome == 'insufficient_evidence':
+        claim.status = ClaimStatus.PARTIAL_PROCESSING
+    else:
+        claim.status = ClaimStatus.FLAGGED if claim.fraud_risk_score > .7 else ClaimStatus.AWAITING_REVIEW

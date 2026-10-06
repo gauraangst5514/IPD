@@ -10,7 +10,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState("claimant");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -37,14 +36,15 @@ export default function LoginPage() {
           email,
           password,
           full_name: fullName,
-          role,
+          role: "claimant",
         });
         login(res.data.access_token, res.data.user_id, res.data.role, res.data.full_name);
       }
       navigate("/");
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } };
-      setError(axiosErr.response?.data?.detail || "Something went wrong");
+      const detail = axiosErr.response?.data?.detail;
+      setError(typeof detail === "string" ? detail : "Check your details. New passwords require at least 12 characters.");
     } finally {
       setLoading(false);
     }
@@ -68,15 +68,15 @@ export default function LoginPage() {
               AI-Powered Insurance<br />Claim Assessment
             </h2>
             <p className="text-slate-300 text-[15px] leading-relaxed">
-              Detect vehicle damage, estimate repair costs, and identify fraud — all in seconds.
+              Detect vehicle damage, estimate repair costs, and highlight evidence for human review.
               Built for the Indian insurance market.
             </p>
 
             <div className="mt-10 space-y-4">
               {[
                 "YOLOv8 damage detection with 6 damage classes",
-                "Vehicle make verification (49 makes, 93% accuracy)",
-                "7-layer fraud detection pipeline",
+                "Vehicle make checks when model weights are available",
+                "Evidence checks with explicit availability",
                 "India-specific cost estimation engine",
               ].map((feature) => (
                 <div key={feature} className="flex items-center gap-3">
@@ -151,6 +151,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
+                  minLength={isLogin ? undefined : 12}
                   onChange={(e) => setPassword(e.target.value)}
                   className="input pr-10"
                   required
@@ -164,21 +165,6 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-
-            {!isLogin && (
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="input"
-                >
-                  <option value="claimant">Claimant (Policy Holder)</option>
-                  <option value="assessor">Assessor</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-            )}
 
             <button
               type="submit"

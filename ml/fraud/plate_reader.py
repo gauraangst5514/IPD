@@ -116,12 +116,17 @@ def check_plate_match(
             "flag": "plate_number_mismatch" or None
         }
     """
+    if not claimed_registration:
+        return {"status": "not_applicable", "match": None, "flag": None, "detail": "No registration supplied"}
+    if not EASYOCR_AVAILABLE:
+        return {"status": "unavailable", "match": None, "flag": None, "detail": "OCR is unavailable"}
     detected_plates = read_plates_from_image(image_bytes)
     claimed_normalized = normalize_plate(claimed_registration) if claimed_registration else ""
 
     if not detected_plates or not claimed_normalized:
         # Cannot determine match - no plates detected or no claimed plate
         return {
+            "status": "inconclusive",
             "detected_plates": detected_plates,
             "claimed_plate": claimed_normalized,
             "match": None,
@@ -136,6 +141,7 @@ def check_plate_match(
     return {
         "detected_plates": detected_plates,
         "claimed_plate": claimed_normalized,
+        "status": "passed" if match_found else "flagged",
         "match": match_found,
         "flag": "plate_number_mismatch" if not match_found else None,
     }

@@ -20,9 +20,6 @@ import exifread
 class ImageForensics:
     """Analyse images for signs of fraud or manipulation."""
 
-    def __init__(self):
-        self.known_hashes: dict[str, str] = {}  # hash -> claim_id mapping
-
     def full_analysis(self, image_bytes: bytes, claim_id: str = "") -> dict:
         """
         Run all forensic checks on an image.
@@ -43,7 +40,7 @@ class ImageForensics:
         if results["exif_analysis"]["suspicious"]:
             scores.append(0.7)
             results["metadata_flags"].append("exif_inconsistency")
-        if results["ela_score"] > 0.6:
+        if results["ela_score"] is not None and results["ela_score"] > 0.6:
             scores.append(results["ela_score"])
             results["metadata_flags"].append("high_ela_score")
         if results["duplicate_check"]["is_duplicate"]:
@@ -70,10 +67,10 @@ class ImageForensics:
         try:
             tags = exifread.process_file(io.BytesIO(image_bytes))
         except Exception:
-            return {"has_exif": False, "suspicious": True, "reason": "Cannot parse EXIF"}
+            return {"has_exif": False, "suspicious": False, "reason": "Cannot parse EXIF"}
 
         if not tags:
-            return {"has_exif": False, "suspicious": True, "reason": "No EXIF data (possible screenshot/download)"}
+            return {"has_exif": False, "suspicious": False, "reason": "No EXIF data; provenance is inconclusive"}
 
         result = {
             "has_exif": True,
@@ -132,39 +129,17 @@ class ImageForensics:
 
             return round(score, 4)
         except Exception:
-            return 0.0
+            return None
 
     def _check_duplicate(self, image_bytes: bytes, claim_id: str) -> dict:
-        """
-        Check if this image (or very similar one) was used in another claim.
+        """Database-backed exact matching lives in the backend, with owner scope.
 
-        Uses perceptual hashing — resilient to resizing, compression, minor edits.
+        Fingerprints here are informational; this stateless service cannot compare claims.
         """
         try:
-            image = Image.open(io.BytesIO(image_bytes))
-
-            # Compute multiple hash types for robustness
-            phash = str(imagehash.phash(image))
-            dhash = str(imagehash.dhash(image))
-            combined_hash = f"{phash}_{dhash}"
-
-            # Check against known hashes
-            is_duplicate = False
-            matching_claim = None
-
-            if combined_hash in self.known_hashes:
-                existing_claim = self.known_hashes[combined_hash]
-                if existing_claim != claim_id:
-                    is_duplicate = True
-                    matching_claim = existing_claim
-
-            # Store hash
-            self.known_hashes[combined_hash] = claim_id
-
-            return {
-                "is_duplicate": is_duplicate,
-                "matching_claim_id": matching_claim,
-                "perceptual_hash": phash,
-            }
+            with Image.open(io.BytesIO(image_bytes)) as image:
+                phash = str(imagehash.phash(image))
         except Exception:
-            return {"is_duplicate": False, "matching_claim_id": None, "perceptual_hash": None}
+            phash = None
+        return {"is_duplicate": False, "matching_claim_id": None,
+                "perceptual_hash": phash, "comparison_available": False}
