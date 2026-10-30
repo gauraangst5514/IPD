@@ -6,6 +6,7 @@ IntelliClaim is a vehicle-damage evidence review prototype for claimants and ins
 
 ## Documentation
 
+- [Completed project report (PDF)](docs/IntelliClaim_Completed_Project_Report.pdf) and [editable Word version](docs/IntelliClaim_Completed_Project_Report.docx): submitted-style report covering the system, models, data, methods, results and limitations.
 - [Complete project documentation](IntelliClaim_Complete_Project_Documentation.md): implementation, measured results, verification and remaining work.
 - [Component-by-component guide](docs/COMPONENT_GUIDE.md): what every component does, inputs/outputs, source files and limitations.
 - [Current handoff](docs/INTEGRATION_HANDOFF.md): operating instructions, artifacts and the exact deployment blocker.
