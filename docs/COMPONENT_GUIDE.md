@@ -189,3 +189,8 @@ CI runs deterministic tests and frontend compilation. Real model/corpus smoke te
 Pinned manifests keep mutable uploads out of evaluations and check source-file integrity. Encoder comparisons, duplicate audits, bootstrap intervals, reranking ablations, damage diagnostics and no-match tests retain both positive and negative findings. The fixed-gallery abstention experiment uses held-out identity groups and finite-sample thresholds, with explicit uncertainty bounds. Small-sample success is not silently promoted to a reliable rejection rule.
 
 The external-source TQVCD stress test checks apparent alerts and exact hash overlap; it lacks audited physical-damage identity labels. Raw images and learned thresholds are not published as a validated insurer decision system. [RESEARCH_RESULTS.md](RESEARCH_RESULTS.md) gives the actual numbers.
+
+
+### Claim photograph correspondence viewer
+
+`frontend/src/components/ClaimCorrespondences.tsx` lets assessors search the historical gallery directly from each claim photograph and inspect real SIFT/RANSAC feature dots and connecting lines. It downloads the authorized image URL, searches five gallery candidates, offers candidate selection, and reuses `CorrespondenceOverlay`. Loading, retry, empty results, and missing geometry are explicit. The query parameter `?correspondences=1` opens the viewer automatically for a presentation. Requests run only while enabled and are cached per image. A deliberately indexed reference copy is a controlled same-image demonstration, not independent evidence of recurring physical damage. User-supplied stock photographs and generated demonstration reports remain local.

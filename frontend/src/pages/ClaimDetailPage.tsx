@@ -1,3 +1,4 @@
+import ClaimCorrespondences from "../components/ClaimCorrespondences";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../lib/api";
@@ -196,7 +197,7 @@ export default function ClaimDetailPage() {
                     {(role === "assessor" || role === "admin") && <AddToGalleryButton claimImageId={img.id} />}
                   </div>
                 </div>
-                {(role === "assessor" || role === "admin") && <><DetectionSaliency imageId={img.id}/><PhotoEvidenceInspector imageId={img.id}/></>}
+                {(role === "assessor" || role === "admin") && <><DetectionSaliency imageId={img.id}/><PhotoEvidenceInspector imageId={img.id}/><ClaimCorrespondences imageId={img.id} originalUrl={img.original_url}/></>}
               </div>
             ))}
           </div>
