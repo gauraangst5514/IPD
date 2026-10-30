@@ -8,11 +8,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python deps
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir aiosqlite bcrypt email-validator asyncpg
 
-COPY . .
+COPY backend/ .
+COPY ml/tabular/ ./ml/tabular/
+COPY scripts/seed_demo.py ./scripts/seed_demo.py
 
 # Create uploads directory
 RUN mkdir -p uploads

@@ -10,3 +10,11 @@ notebooks/
 .DS_Store
 frontend/node_modules
 frontend/dist
+.venv/
+var/
+ml/evidence/
+ml/weights/
+!ml/weights/osnet_similarity_state.pt
+!ml/weights/detection/cardd_yolov8/weights/best.pt
+!ml/weights/tabular/model.json
+!ml/weights/tabular/graph.json

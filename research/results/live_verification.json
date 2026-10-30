@@ -1,0 +1,15 @@
+{
+  "frontend": {
+    "status": 200
+  },
+  "backend": {
+    "status": 200
+  },
+  "ml": {
+    "status": 200,
+    "model_trained": true
+  },
+  "unauthenticated_retrieval_status": 401,
+  "claimant_retrieval_status": 403,
+  "browser_evidence": "research/results/browser_retrieval_verified.png; real original photograph upload, OSNet 420-image gallery, rendered candidates"
+}

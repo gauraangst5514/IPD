@@ -1,0 +1,9 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY backend/requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/ ./
+COPY ml/tabular/ ./ml/tabular/
+ENV PYTHONPATH=/app UPLOADS_DIR=/tmp/uploads DEBUG=false PROCESSING_MODE=inline GRAPH_BACKEND=sql STORAGE_BACKEND=blob
+EXPOSE 80
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

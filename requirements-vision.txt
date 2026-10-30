@@ -1,0 +1,13 @@
+-r requirements-dev.txt
+torch==2.3.0
+torchvision==0.18.0
+ultralytics==8.4.77
+opencv-python==4.10.0.84
+timm>=1.0,<2
+
+easyocr==1.7.2
+transformers==4.49.0
+safetensors>=0.4,<1
+yacs==0.1.8
+einops>=0.7,<1
+psycopg2-binary==2.9.9

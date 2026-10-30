@@ -15,7 +15,9 @@ from typing import Optional
 import numpy as np
 from PIL import Image
 
-WEIGHTS_PATH = Path("ml/weights/vehicle_make/vehicle_make_classifier.pt")
+ROOT = Path(__file__).resolve().parents[1]
+WEIGHTS_PATH = ROOT / 'weights/vehicle_make/vehicle_make_classifier.pt'
+HF_MODEL_PATH = ROOT / 'weights/vehicle_make_hf'
 
 
 class VehicleMakeClassifier:
@@ -28,11 +30,42 @@ class VehicleMakeClassifier:
         self.device = None
         self.loaded = False
 
-        if WEIGHTS_PATH.exists():
+        self.processor = None
+        self.method = 'efficientnet_stanford_cars'
+        self.unavailable_reason = 'checkpoint_missing'
+        if (HF_MODEL_PATH / 'model.safetensors').exists():
+            self._load_hf_model()
+        elif WEIGHTS_PATH.exists():
             self._load_model()
         else:
             print(f"⚠️  Vehicle make classifier weights not found at {WEIGHTS_PATH}")
             print(f"   Run notebooks/train_vehicle_classifier_kaggle.ipynb to train.")
+
+    def _load_hf_model(self):
+        try:
+            import torch
+            from transformers import AutoImageProcessor, AutoModelForImageClassification
+            self.processor = AutoImageProcessor.from_pretrained(HF_MODEL_PATH, local_files_only=True,use_fast=False)
+            self.model = AutoModelForImageClassification.from_pretrained(
+                HF_MODEL_PATH, local_files_only=True, use_safetensors=True).eval()
+            self.device = torch.device('cpu')
+            self.idx_to_make = {int(k): str(v) for k,v in self.model.config.id2label.items()}
+            if not self.idx_to_make or any(v.startswith('LABEL_') for v in self.idx_to_make.values()):
+                raise ValueError('Classifier must have explicit vehicle-make labels')
+            self.method = 'pretrained_vit_vehicle_make'
+            self.loaded = True
+            self.unavailable_reason = None
+        except Exception:
+            import logging
+            logging.getLogger(__name__).exception('Vehicle model could not load')
+            self.loaded = False
+            self.unavailable_reason = 'checkpoint_load_failed'
+
+    def status(self):
+        return {'available': self.loaded, 'method': self.method,
+                'reason': self.unavailable_reason,
+                'supported_makes': sorted(set(self.idx_to_make.values())) if self.loaded else [],
+                'limitation': 'Pretrained visual make suggestion; confidence is uncalibrated. Close-up damage photos and unsupported makes may be inconclusive.'}
 
     def _load_model(self):
         """Load the trained classifier."""
@@ -50,7 +83,7 @@ class VehicleMakeClassifier:
                 self.device = torch.device("cpu")
 
             # Load checkpoint
-            checkpoint = torch.load(WEIGHTS_PATH, map_location=self.device, weights_only=False)
+            checkpoint = torch.load(WEIGHTS_PATH, map_location=self.device, weights_only=True)
 
             # Build model
             num_classes = checkpoint["num_classes"]
@@ -103,12 +136,14 @@ class VehicleMakeClassifier:
 
         try:
             image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-            input_tensor = self.transform(image).unsqueeze(0).to(self.device)
+            input_tensor = (self.processor(images=image, return_tensors='pt')['pixel_values']
+                            if self.processor else self.transform(image).unsqueeze(0)).to(self.device)
 
             with torch.no_grad():
                 output = self.model(input_tensor)
-                probs = torch.softmax(output, dim=1)
-                top_probs, top_indices = probs.topk(top_k, dim=1)
+                logits = output.logits if self.processor else output
+                probs = torch.softmax(logits, dim=1)
+                top_probs, top_indices = probs.topk(min(top_k, len(self.idx_to_make)), dim=1)
 
             top_predictions = [
                 (self.idx_to_make[idx.item()], prob.item())
@@ -124,7 +159,7 @@ class VehicleMakeClassifier:
             print(f"⚠️  Vehicle make prediction failed: {e}")
             return {"predicted_make": None, "confidence": 0.0, "top_predictions": []}
 
-    def verify_make(self, image_bytes: bytes, claimed_make: str, threshold: float = 0.4) -> dict:
+    def verify_make(self, image_bytes: bytes, claimed_make: str, threshold: float = 0.7) -> dict:
         """
         Verify if the vehicle in the image matches the claimed make.
 
@@ -141,6 +176,10 @@ class VehicleMakeClassifier:
         if not self.loaded:
             return {"match": None, "flag": None, "detail": "Classifier not available"}
 
+        if not claimed_make or self._normalize_make(claimed_make) not in {
+                self._normalize_make(make) for make in self.idx_to_make.values()}:
+            return {'match': None, 'flag': None, 'detail': 'Claimed make is outside this model vocabulary.',
+                    'supported_makes': sorted(set(self.idx_to_make.values()))}
         prediction = self.predict(image_bytes)
 
         if prediction["confidence"] < threshold:
@@ -192,7 +231,7 @@ class VehicleMakeClassifier:
                 "detail": (
                     f"Claimed {claimed_make.title()} but image shows "
                     f"{prediction['predicted_make'].title()} "
-                    f"({prediction['confidence']:.0%} confidence)"
+                    f"(model score {prediction['confidence']:.0%}; verify manually)"
                 ),
             }
 
@@ -260,7 +299,6 @@ class VehicleMakeClassifier:
         equivalent_groups = [
             {"suzuki", "maruti"},                          # Maruti Suzuki
             {"mercedes-benz", "maybach"},                  # Mercedes group
-            {"volkswagen", "skoda"},                       # VW group
         ]
         for group in equivalent_groups:
             if make1 in group and make2 in group:

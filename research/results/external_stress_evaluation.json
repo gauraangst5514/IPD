@@ -1,0 +1,1436 @@
+{
+  "source": "TQVCD public repository sample",
+  "source_commit": "b6b056b76c6d4233e5db7b8cf8ef87e7e0bd6f61",
+  "source_url": "https://github.com/dxlabskku/TQVCD",
+  "unique_external_images": 113,
+  "exact_hash_overlaps": [],
+  "interpretation": "Apparent no-match alerts under an unverified cross-source physical-identity disjointness assumption. External-source stress only; not external same-damage recognition accuracy.",
+  "limitations": [
+    "No matching same-damage identity labels in the external sample",
+    "Filename/category labels do not establish physical identity",
+    "Training-corpus overlap remains unknown",
+    "No explicit raw-image redistribution license; raw images remain local",
+    "Repeated views may remain dependent after exact deduplication",
+    "Thresholds are frozen from Generali; domain exchangeability is unverified"
+  ],
+  "encoders": {
+    "resnet18": {
+      "embedding": "ImageNet_ResNet18",
+      "gallery_fingerprint": "41873fbf777f4ee5ab6a9bda1049b625078f421e4c4fa082c75d917a3fe6c236",
+      "gallery_images": 110,
+      "elapsed_seconds": 9.838495792000685,
+      "operating_points": {
+        "0.05": {
+          "frozen_threshold": 0.8950024247169495,
+          "apparent_alerts": 0,
+          "queries": 113,
+          "apparent_alert_fraction": 0.0,
+          "validated_false_positive_rate": null
+        },
+        "0.1": {
+          "frozen_threshold": 0.8397481441497803,
+          "apparent_alerts": 8,
+          "queries": 113,
+          "apparent_alert_fraction": 0.07079646017699115,
+          "validated_false_positive_rate": null
+        },
+        "0.2": {
+          "frozen_threshold": 0.8283588886260986,
+          "apparent_alerts": 20,
+          "queries": 113,
+          "apparent_alert_fraction": 0.17699115044247787,
+          "validated_false_positive_rate": null
+        }
+      },
+      "rows": [
+        {
+          "query": "FB/FB_1.jpg",
+          "sha256": "d5e14f962d2543a8f8f3f719996822a93113314105bebf8b86c13dc4f7d0104c",
+          "top_score": 0.849704384803772,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FB/FB_10.jpg",
+          "sha256": "ef71d22f0d0ac7f133032abf361f260a6726808447d8b1cefebb1eb2de322431",
+          "top_score": 0.8114982843399048,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FB/FB_11.jpg",
+          "sha256": "e1a3195f5a1d28b98b71d522df55e2608c05a31203023fba6fcffafa4efe372e",
+          "top_score": 0.8073362708091736,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FB/FB_12.jpg",
+          "sha256": "7ae7a0094752e9bdafad11da6b49422226cc5beb2802daf7af3b0ba1b932d735",
+          "top_score": 0.8225427865982056,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FB/FB_13.jpg",
+          "sha256": "afc0c288183c8171296abc2bf7da699f44173d6df4719cf623d19a04037ca96d",
+          "top_score": 0.8195464611053467,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FB/FB_14.jpg",
+          "sha256": "5535db6c9a8427c8547694dee218533ccd83852a950b80fc687eed3c2a230d12",
+          "top_score": 0.7873427867889404,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FB/FB_15.jpg",
+          "sha256": "7ac50da994cb55a1d6947fa2942cc10d050176e72afa210e9d82fd1954f846a1",
+          "top_score": 0.7883080244064331,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FB/FB_16.jpg",
+          "sha256": "d187c9847b0bdda1f3472a605bfd56d86676589d93fa5b6955ae602a7cfec5df",
+          "top_score": 0.8114755749702454,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FB/FB_17.jpg",
+          "sha256": "c3f24894a0a1388570bc00652434df9640b199d399d523e1ce8aa05ac475fcef",
+          "top_score": 0.7924808263778687,
+          "candidate": "25_6.jpg"
+        },
+        {
+          "query": "FB/FB_18.jpg",
+          "sha256": "0b9162737c6a75d33c4abdcc4cdb46a5de01e6af32789fb2316a5f6ac547a060",
+          "top_score": 0.7868756651878357,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "FB/FB_19.jpg",
+          "sha256": "de70bc06b5ae62c864676d44638d68b9aad30fb59440db83e118483bc70c6ddf",
+          "top_score": 0.7886011600494385,
+          "candidate": "25_7.jpg"
+        },
+        {
+          "query": "FB/FB_2.jpg",
+          "sha256": "ac262248fbb8011e6149cfb982b3e790334796ba6d2c7a7e0a25ffebc39d9091",
+          "top_score": 0.8212432861328125,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FB/FB_20.jpg",
+          "sha256": "da478165695e70c884b13a2802fdc4bf90adbb29720a35d8c41ccba89cbb12e2",
+          "top_score": 0.7972933650016785,
+          "candidate": "25_6.jpg"
+        },
+        {
+          "query": "FB/FB_3.jpg",
+          "sha256": "f6b29c067906fef8c75ed3c2cf4d07a4b9590fe48e31ced470fc32212e5d0173",
+          "top_score": 0.8171931505203247,
+          "candidate": "15_11.jpg"
+        },
+        {
+          "query": "FB/FB_4.jpg",
+          "sha256": "996f54d35a168d9fcfc51e92b1bc4f6d3f4956d9a6e38a5fa3a20cf6d7e940d6",
+          "top_score": 0.8366255164146423,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FB/FB_5.jpg",
+          "sha256": "bcec8aea55bed4ee9eed90f3ae5f3a9e97fe7bf8680a494dc50175e0df20c0d9",
+          "top_score": 0.7768834233283997,
+          "candidate": "34_2.jpg"
+        },
+        {
+          "query": "FB/FB_6.jpg",
+          "sha256": "9aa063795262416d3c23539302fba75eb65f38ea68381174d25c7383e670ec94",
+          "top_score": 0.812661349773407,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FB/FB_7.jpg",
+          "sha256": "e950b28882a9595044d4c224cdd7baa9a03079df79d879db437fa3c0a65eb18d",
+          "top_score": 0.8193298578262329,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FB/FB_8.jpg",
+          "sha256": "76e0c1cddb60bd2624fdd272204276a46fbb39efda8b8fa332868b0525ebf62a",
+          "top_score": 0.8116233944892883,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FB/FB_9.jpg",
+          "sha256": "0c1b014b4953251c993d7626a7732bc881883226e94c1380e2ea703719ac6a5b",
+          "top_score": 0.7922531962394714,
+          "candidate": "34_2.jpg"
+        },
+        {
+          "query": "FC/FC_1.jpg",
+          "sha256": "5081e37912ee656f93c9ce5d69660a345b4d10c76dc9ff74162fe5658fd559d9",
+          "top_score": 0.7586888074874878,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FC/FC_10.jpg",
+          "sha256": "e27e5c7bce504f2dc1e8a76677a9f0160ab2550409fb6ca85bc6b8d4926ff77f",
+          "top_score": 0.7930793762207031,
+          "candidate": "15_11.jpg"
+        },
+        {
+          "query": "FC/FC_11.jpg",
+          "sha256": "e57b6df8f6bcc18d4a59afca4d59bf7a698fba41be5f83c5cd02f3cb6c9504b4",
+          "top_score": 0.8280871510505676,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FC/FC_12.jpg",
+          "sha256": "acf6eec7365059183118295e15a7ee7e8ff8e008ce80a91cf63b271856222936",
+          "top_score": 0.8299176096916199,
+          "candidate": "25_5.jpg"
+        },
+        {
+          "query": "FC/FC_13.jpg",
+          "sha256": "56d5020021b6950233c1d3d3663f50314bc79edb2adc2a8ab3f94fca3529fe55",
+          "top_score": 0.8233228921890259,
+          "candidate": "25_2.jpg"
+        },
+        {
+          "query": "FC/FC_14.jpg",
+          "sha256": "3cc7349d5340a0ce4170cd721b18fac64488512218b27f04ad5f1c8d79a68e44",
+          "top_score": 0.8399965763092041,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_15.jpg",
+          "sha256": "ba5b605f14366c518254d81b414f3de29f09126f8fd16e0d5dbd5d9c2737218b",
+          "top_score": 0.8352848887443542,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_16.jpg",
+          "sha256": "3c394b9f2116f7399fa32375440ab41afd9c09fc6abd7b2f02a552686b14ac96",
+          "top_score": 0.7683053016662598,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_17.jpg",
+          "sha256": "03ba01462a613001f6baad5834493c3f90f083d01d19c16eb35dc06792cbb7c6",
+          "top_score": 0.7996281385421753,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FC/FC_18.jpg",
+          "sha256": "9267f1fc1ba2aac7ab81c5cd6de0d331c03ae0678059e921d85b5c44f06411fb",
+          "top_score": 0.8470145463943481,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_19.jpg",
+          "sha256": "10ed8f3594a0a9ec45923621993a8f9652049068574827314fd1441a99c3d334",
+          "top_score": 0.8205652832984924,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_2.jpg",
+          "sha256": "6e0a434f1f9ddae292ab2124cf3e6320785269ba9080528824e533d60be73833",
+          "top_score": 0.83510822057724,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FC/FC_20.jpg",
+          "sha256": "c241680fd8fb0ffa684021c600d9c6e57ec1c146831bf887aff952f312da6d1f",
+          "top_score": 0.8341020941734314,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_3.jpg",
+          "sha256": "5b28c02b371483690832364776065064717e5827b3f21575bf2bd2cdf18a2443",
+          "top_score": 0.8148913383483887,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_4.jpg",
+          "sha256": "8f3ef5be0e406d9044240edb5b7b1cb73bace1f0dd1b199253b337bf0478497a",
+          "top_score": 0.8171484470367432,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FC/FC_5.jpg",
+          "sha256": "0fe31a76375f93de3b28edcdc2214f8ace85f0226baff1ecdf13aa55cc67de1e",
+          "top_score": 0.8382042646408081,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FC/FC_6.jpg",
+          "sha256": "20f5d7707732f4757793773c725ca0238fb4f0743c6da0836b13f782da43df1d",
+          "top_score": 0.8043279051780701,
+          "candidate": "25_7.jpg"
+        },
+        {
+          "query": "FC/FC_7.jpg",
+          "sha256": "9406faaa41eab08a755eb95923bd3175f503c4161346cad79db84f95afd70979",
+          "top_score": 0.8185547590255737,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FC/FC_8.jpg",
+          "sha256": "600b395e9dca1957abfab6a83d8661f55d7c3f68e21c537156f73b35250af5bb",
+          "top_score": 0.8002551198005676,
+          "candidate": "25_7.jpg"
+        },
+        {
+          "query": "FC/FC_9.jpg",
+          "sha256": "2d9e7dd78cea298e7bfb3ca4a34c11ef79b9a2d288bd980af98d0e23c9770ed1",
+          "top_score": 0.789033055305481,
+          "candidate": "25_7.jpg"
+        },
+        {
+          "query": "FN/FN_1.jpg",
+          "sha256": "96ec4e6e825379d4b9a4586c9f07cd44767e5304aac94a1de41f3fc0f0f27cbf",
+          "top_score": 0.8179147839546204,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_10.jpg",
+          "sha256": "7e066da2f635fe9dc9546c900111f8fdb9268f02c52f2540a217585d16bed204",
+          "top_score": 0.8223569393157959,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_11.jpg",
+          "sha256": "74cc20ef843bddf267c6ba5e6d89647adace6cf989f4c4b91587e499bb7918d1",
+          "top_score": 0.780083179473877,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FN/FN_12.jpg",
+          "sha256": "d28e96b813484fb374792fb24245e0763c28457f87547d1600fa5f3c7d411b8a",
+          "top_score": 0.8177585601806641,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FN/FN_13.jpg",
+          "sha256": "9c3db3557d767087b9013e34c8f40c3954a031679b8b947b173d2c487bfd6d4d",
+          "top_score": 0.8030853271484375,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FN/FN_14.jpg",
+          "sha256": "5250e1ba88d3926541412c16bc7a4e71cb416b26578944e5e54f1b43793aa213",
+          "top_score": 0.8255306482315063,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FN/FN_15.jpg",
+          "sha256": "76b9c4682a167f25a0fa7dee5e30917700c7ad35daf9771cdd85ee2c84481b46",
+          "top_score": 0.780769944190979,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_16.jpg",
+          "sha256": "02eb408d51d5e813f75d8ad8cae0b170895f9fbf6f86995fd4ae1eda40856d8b",
+          "top_score": 0.7895588874816895,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_17.jpg",
+          "sha256": "6abfc6f1091d66f74716e907e36af533f5b43e8661e4d560cf25bac7142fa92a",
+          "top_score": 0.8216730356216431,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FN/FN_18.jpg",
+          "sha256": "d23defa13de430abebbb1bb5416d89f1047d5d3f702b97ad7d5f45886998e70a",
+          "top_score": 0.8413670063018799,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_19.jpg",
+          "sha256": "32ceed92d3654db3b7481bf8f47e17cd9e9a0c86da7c6257a73d04c685391e97",
+          "top_score": 0.7860865592956543,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_2.jpg",
+          "sha256": "7432b183597ed8daeb4259c854536562f8af1fe59e9cc19aecd7d50ffd291afb",
+          "top_score": 0.7929466962814331,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FN/FN_20.jpg",
+          "sha256": "31cba9e6895dc8c59518249abccc37579a7afc960183cf65415d878bb5dde7c6",
+          "top_score": 0.7889235019683838,
+          "candidate": "25_7.jpg"
+        },
+        {
+          "query": "FN/FN_3.jpg",
+          "sha256": "f40fde22f823a7cbe4efb8bd8f3e1489be01ac47f93ac5a153df960ff66d17c8",
+          "top_score": 0.8063167333602905,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_4.jpg",
+          "sha256": "11550bde6772766baf92ebd2eb0d083b81cd7f02ec1ef627d684241ed484eaa6",
+          "top_score": 0.7814216613769531,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_5.jpg",
+          "sha256": "4be66bca29d5e9e77e35f7799578a097b301c2ec96669a4186f0a9c27aee4afe",
+          "top_score": 0.8356261253356934,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_6.jpg",
+          "sha256": "5df27cc0a47774978aeaddfe41260979fd74b5dc70a4638be8b4e3a635b9ae08",
+          "top_score": 0.8211788535118103,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "FN/FN_7.jpg",
+          "sha256": "480b060db18c4eab7c35e4decbddea2c4002e2c19116a30f06147c32c36fa097",
+          "top_score": 0.7970986366271973,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "FN/FN_8.jpg",
+          "sha256": "23efdf45e4d6d66f920cb2e0c2d35d10805ffb6f408851398cd3fcb4f73a0e62",
+          "top_score": 0.8150055408477783,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "FN/FN_9.jpg",
+          "sha256": "559b96cce9bb7e40125ae9559d16c5469c978e852adc92dddec54f9d04c094af",
+          "top_score": 0.7938586473464966,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RB/RB_1.jpg",
+          "sha256": "e136205fe71e94bbc6685fa472eba9c3993c933b1440dfbe60c58a3562f2b29e",
+          "top_score": 0.8218228816986084,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_10.jpg",
+          "sha256": "a33483793389f785f9c442db0b48ec6dadd87df4a75755d959cb0da8be07f63e",
+          "top_score": 0.8183443546295166,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RB/RB_11.jpg",
+          "sha256": "44a27f1cea76e55aa8d66112697a1422c410e8bc01c3974ddc0f3171e5fde997",
+          "top_score": 0.7834527492523193,
+          "candidate": "31_5.jpg"
+        },
+        {
+          "query": "RB/RB_12.jpg",
+          "sha256": "ce6842768e53c8533967ba3d4093143e77399df79d06f33cd24d9bfddaa26e7a",
+          "top_score": 0.8016110062599182,
+          "candidate": "25_6.jpg"
+        },
+        {
+          "query": "RB/RB_13.jpg",
+          "sha256": "1bd28b51b9a142d9d1458f830cc13574a5cbbbd3e1bfdce4cba79bc64e7dcbe0",
+          "top_score": 0.8145498037338257,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_14.jpg",
+          "sha256": "7cc07b372ee1e1cc32e7da3ed53d9a07a26a695c0e488881f4803cbfddf866f9",
+          "top_score": 0.8489651083946228,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_15.jpg",
+          "sha256": "54f31af224b2658a5080b0485d81549823d0e91b32e0a43f7152ae5af6f6b51b",
+          "top_score": 0.8046982288360596,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_16.jpg",
+          "sha256": "e2bc76f35af0f27d672a4150c54d831b0c6c95d4ea9ac3e3f8c728d5684128ab",
+          "top_score": 0.7836137413978577,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RB/RB_17.jpg",
+          "sha256": "ed8a5d380be58528e794693e7e35d4f02c318b4453239d1bb66d68d280e432cf",
+          "top_score": 0.7625744938850403,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_18.jpg",
+          "sha256": "1713009be53da11dbb5db78eb8a405deb222debcf32fe71575a120387a112d3e",
+          "top_score": 0.8187518119812012,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_19.jpg",
+          "sha256": "1302bfd74a44797dec0bde6694c2f1cc76ebaf0f4184cf8b40ce678b59ea62c4",
+          "top_score": 0.7991023659706116,
+          "candidate": "36_2.jpg"
+        },
+        {
+          "query": "RB/RB_2.jpg",
+          "sha256": "7beec8567b7ce8290047e05301186fa3121913f134906ce3b8253353aafacd1f",
+          "top_score": 0.7625160217285156,
+          "candidate": "25_9.jpg"
+        },
+        {
+          "query": "RB/RB_20.jpg",
+          "sha256": "1ba199e9079e8203b5661527585b3572a4a8b208eb7962ab1958e4e54abc201d",
+          "top_score": 0.8112757205963135,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_3.jpg",
+          "sha256": "b1b843b542a79fd34a2c965454bcf2f74f5ea02dc313008cfb01c9c3a224b78c",
+          "top_score": 0.8003461360931396,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_4.jpg",
+          "sha256": "d2231b8bc69558518a28553a7ea4dc1ad75f860fc2ea620cae0fdd5e90d4f75f",
+          "top_score": 0.7879916429519653,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_5.jpg",
+          "sha256": "27ce5e6fa738fa7c227480ba273336de090145325633cf5e83728dec584bde1d",
+          "top_score": 0.826774001121521,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RB/RB_6.jpg",
+          "sha256": "514d09671ba74a984ef8882bf3e506a09ccb60e48d8c28a77900252667001366",
+          "top_score": 0.7860250473022461,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RB/RB_7.jpg",
+          "sha256": "cb00961cca7de290f126c09412e7919950e2419eede829a74a9fd5257494110d",
+          "top_score": 0.8476384878158569,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RB/RB_8.jpg",
+          "sha256": "44b400a8d43e2cb7e51eacc2905dced686abd59940ff39a29dbe0b5911e618de",
+          "top_score": 0.8139120936393738,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RB/RB_9.jpg",
+          "sha256": "a53ace9820875f620cd6b263209cbc67d484471b5dfffcf09680b4aaa596e74b",
+          "top_score": 0.835153341293335,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RC/RC_1.jpg",
+          "sha256": "d948a3733bbbe7154bb6df19a0c398236b2b64022e23825789ae79571f75b7e8",
+          "top_score": 0.7944743633270264,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RC/RC_10.jpg",
+          "sha256": "7ba714cae8301f31033f5a5ddc9697e12ee57a9fb8dd8ec6d80d549057698f09",
+          "top_score": 0.8293889164924622,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RC/RC_11.jpg",
+          "sha256": "579903d7875726497523241e494fbb1aaffe16128ec6f1c74630a173fdd8393a",
+          "top_score": 0.8522030115127563,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RC/RC_12.jpg",
+          "sha256": "bff1199e9890e0f4fccee630c7ff40dc02fe231c08cfd1fa43d743887b333c21",
+          "top_score": 0.7900875806808472,
+          "candidate": "25_6.jpg"
+        },
+        {
+          "query": "RC/RC_13.jpg",
+          "sha256": "3153134e15741494f85ce757edd200847ac97fe42ef74c10b6c526bd18f1154b",
+          "top_score": 0.7970459461212158,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RC/RC_15.jpg",
+          "sha256": "fb64186a9f7a09e05adb63b2a4ef6199ea86f470e103adeabe133430c0bb5811",
+          "top_score": 0.8148252964019775,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RC/RC_16.jpg",
+          "sha256": "bcf2afe8eca7086908cbffde8159481b5689cf50ab407825e4521a9d8a338740",
+          "top_score": 0.8172839879989624,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RC/RC_17.jpg",
+          "sha256": "a8e8974e4edef23b113f09d450a68213dd379fefa881c98b955d9193dd4ef6fa",
+          "top_score": 0.8411356210708618,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RC/RC_18.jpg",
+          "sha256": "2d76d6514b1014c47fac71b1e9fb3ff29edf28c0b4ba0bfbf607ae6cbb50e412",
+          "top_score": 0.7493041753768921,
+          "candidate": "36_7.jpg"
+        },
+        {
+          "query": "RC/RC_19.jpg",
+          "sha256": "9e580792208af96cb1700e976c24e5b76ea97709a0b19dac5a349f5bab760392",
+          "top_score": 0.821347713470459,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RC/RC_2.jpg",
+          "sha256": "f82d25824a16b0b2696614646ab2780c04bac47d8592473a01949bebcf0884ec",
+          "top_score": 0.828864336013794,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "RC/RC_20.jpg",
+          "sha256": "0d87fd3b0106c893c025e123c5ebada4a1bec5b84844a7afc678be42ca14294d",
+          "top_score": 0.8073558807373047,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RC/RC_3.jpg",
+          "sha256": "3fa5a4f1f3adec135dfcadda2cd7aa8b5c587891ca8123d89c94bf3389f5ad6b",
+          "top_score": 0.8097690939903259,
+          "candidate": "36_12.jpg"
+        },
+        {
+          "query": "RC/RC_4.jpg",
+          "sha256": "997c4663c3f86ba0e037726330ca5ae0aa9e9846bcfee37dfce5630e35cb7298",
+          "top_score": 0.8114228844642639,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RC/RC_5.jpg",
+          "sha256": "31e49de8ad360ae4f6d6922cf9df07eacf026994379ee5b2f87c0376c3a1f77a",
+          "top_score": 0.8393540382385254,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RC/RC_6.jpg",
+          "sha256": "878303cfafb61665f1142824c42d19fe2127e58c826bc5dcc45b5a6af271a779",
+          "top_score": 0.8338549137115479,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RC/RC_7.jpg",
+          "sha256": "b140239767aee9f89c032aad672144c2bb5f70a683ac7401180d28c8132ecb81",
+          "top_score": 0.7807344794273376,
+          "candidate": "31_5.jpg"
+        },
+        {
+          "query": "RC/RC_8.jpg",
+          "sha256": "555bcb7e40822560cfccecbe575c485a8bbecb28122acc64faffb51ecc8cf363",
+          "top_score": 0.7761664390563965,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RC/RC_9.jpg",
+          "sha256": "174f1f9bd0d54d741c04db98b3f201273d01988affda09a433a07875043f5b3d",
+          "top_score": 0.7839639186859131,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_1.jpg",
+          "sha256": "864f7e8883cd15032d62fb31fcc416a7bbd9dd59ead11cdcb811824665932409",
+          "top_score": 0.8087327480316162,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "RN/RN_10.jpg",
+          "sha256": "6493aecaf0726d8fac35d45dd9684a0d704928ad29afbb70c1c3b3dd983e9d76",
+          "top_score": 0.8104195594787598,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_11.jpg",
+          "sha256": "ae1ae909e42fe528b28beabfc073d3fb8244e9a24c1bac54a2893f1f6c4a9108",
+          "top_score": 0.8090698719024658,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "RN/RN_12.jpg",
+          "sha256": "415e7dbdab512c02c1dd3b5b2494239d4b5cc249b945e3381604996f2d28b0e9",
+          "top_score": 0.815570056438446,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_13.jpg",
+          "sha256": "aaca2cbe9cd97c9256c5f8f5c0b5c63b82372eb28e45b35d1c99e5fbd38e853d",
+          "top_score": 0.822960615158081,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_14.jpg",
+          "sha256": "8e77c8960a7423bc18a321726c4f82b31552a351f86d0713f969fd57e4b53dcc",
+          "top_score": 0.7720178365707397,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_15.jpg",
+          "sha256": "bc637b82484dedc93301138dbea1cd1aef0c0cb2bac581bb5b6b3c95dac1ae37",
+          "top_score": 0.7841812372207642,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "RN/RN_16.jpg",
+          "sha256": "1bae62f9fb50ef31258ead11cf489e22f731790f12788570e043bdfe12299028",
+          "top_score": 0.801733136177063,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RN/RN_17.jpg",
+          "sha256": "9a25e27d5ff033c6580fb031e16df51d08895adeb9d30b3f989334710f3822f8",
+          "top_score": 0.7824658155441284,
+          "candidate": "12_4.jpg"
+        },
+        {
+          "query": "RN/RN_18.jpg",
+          "sha256": "f249ce5a8f828ddb9967fbd118f797d32f10323d281c887811d86be2b330538a",
+          "top_score": 0.8129463195800781,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_19.jpg",
+          "sha256": "102bb661c5afacd5b03c7c0ee3c0eed1b12fd8b3767c823b91a628d8f87b7e61",
+          "top_score": 0.7937116622924805,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_2.jpg",
+          "sha256": "23e38b9c3a9df65ccfbe0bee08edb11dc42e0485c7946ce1db56993a4676cd70",
+          "top_score": 0.8088501691818237,
+          "candidate": "25_4.jpg"
+        },
+        {
+          "query": "RN/RN_20.jpg",
+          "sha256": "28c4937d2547f51be2a13cb0a965c63186d7d562abc73e03dc4c077a11c02151",
+          "top_score": 0.7932404279708862,
+          "candidate": "36_4.jpg"
+        },
+        {
+          "query": "RN/RN_3.jpg",
+          "sha256": "19a82cd417f01cec30fef252452e35d73054cb8c266bbc9992a86222eec2ab55",
+          "top_score": 0.8034970760345459,
+          "candidate": "25_4.jpg"
+        }
+      ]
+    },
+    "osnet": {
+      "embedding": "Generali_OSNet_AIN_x1_0",
+      "gallery_fingerprint": "41873fbf777f4ee5ab6a9bda1049b625078f421e4c4fa082c75d917a3fe6c236",
+      "gallery_images": 110,
+      "elapsed_seconds": 14.368238959001246,
+      "operating_points": {
+        "0.05": {
+          "frozen_threshold": 0.7797961235046387,
+          "apparent_alerts": 0,
+          "queries": 113,
+          "apparent_alert_fraction": 0.0,
+          "validated_false_positive_rate": null
+        },
+        "0.1": {
+          "frozen_threshold": 0.7581684589385986,
+          "apparent_alerts": 0,
+          "queries": 113,
+          "apparent_alert_fraction": 0.0,
+          "validated_false_positive_rate": null
+        },
+        "0.2": {
+          "frozen_threshold": 0.7496492266654968,
+          "apparent_alerts": 0,
+          "queries": 113,
+          "apparent_alert_fraction": 0.0,
+          "validated_false_positive_rate": null
+        }
+      },
+      "rows": [
+        {
+          "query": "FB/FB_1.jpg",
+          "sha256": "d5e14f962d2543a8f8f3f719996822a93113314105bebf8b86c13dc4f7d0104c",
+          "top_score": 0.6128028035163879,
+          "candidate": "35_9.jpg"
+        },
+        {
+          "query": "FB/FB_10.jpg",
+          "sha256": "ef71d22f0d0ac7f133032abf361f260a6726808447d8b1cefebb1eb2de322431",
+          "top_score": 0.5967473983764648,
+          "candidate": "34_2.jpg"
+        },
+        {
+          "query": "FB/FB_11.jpg",
+          "sha256": "e1a3195f5a1d28b98b71d522df55e2608c05a31203023fba6fcffafa4efe372e",
+          "top_score": 0.6494723558425903,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "FB/FB_12.jpg",
+          "sha256": "7ae7a0094752e9bdafad11da6b49422226cc5beb2802daf7af3b0ba1b932d735",
+          "top_score": 0.6618275046348572,
+          "candidate": "35_11.jpg"
+        },
+        {
+          "query": "FB/FB_13.jpg",
+          "sha256": "afc0c288183c8171296abc2bf7da699f44173d6df4719cf623d19a04037ca96d",
+          "top_score": 0.6297121047973633,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "FB/FB_14.jpg",
+          "sha256": "5535db6c9a8427c8547694dee218533ccd83852a950b80fc687eed3c2a230d12",
+          "top_score": 0.630344808101654,
+          "candidate": "12_31.jpg"
+        },
+        {
+          "query": "FB/FB_15.jpg",
+          "sha256": "7ac50da994cb55a1d6947fa2942cc10d050176e72afa210e9d82fd1954f846a1",
+          "top_score": 0.6380904316902161,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FB/FB_16.jpg",
+          "sha256": "d187c9847b0bdda1f3472a605bfd56d86676589d93fa5b6955ae602a7cfec5df",
+          "top_score": 0.6607531905174255,
+          "candidate": "12_9.jpg"
+        },
+        {
+          "query": "FB/FB_17.jpg",
+          "sha256": "c3f24894a0a1388570bc00652434df9640b199d399d523e1ce8aa05ac475fcef",
+          "top_score": 0.5826154947280884,
+          "candidate": "12_31.jpg"
+        },
+        {
+          "query": "FB/FB_18.jpg",
+          "sha256": "0b9162737c6a75d33c4abdcc4cdb46a5de01e6af32789fb2316a5f6ac547a060",
+          "top_score": 0.5685446858406067,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FB/FB_19.jpg",
+          "sha256": "de70bc06b5ae62c864676d44638d68b9aad30fb59440db83e118483bc70c6ddf",
+          "top_score": 0.6569719314575195,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "FB/FB_2.jpg",
+          "sha256": "ac262248fbb8011e6149cfb982b3e790334796ba6d2c7a7e0a25ffebc39d9091",
+          "top_score": 0.6251620054244995,
+          "candidate": "35_4.jpg"
+        },
+        {
+          "query": "FB/FB_20.jpg",
+          "sha256": "da478165695e70c884b13a2802fdc4bf90adbb29720a35d8c41ccba89cbb12e2",
+          "top_score": 0.5700876116752625,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "FB/FB_3.jpg",
+          "sha256": "f6b29c067906fef8c75ed3c2cf4d07a4b9590fe48e31ced470fc32212e5d0173",
+          "top_score": 0.6254198551177979,
+          "candidate": "35_4.jpg"
+        },
+        {
+          "query": "FB/FB_4.jpg",
+          "sha256": "996f54d35a168d9fcfc51e92b1bc4f6d3f4956d9a6e38a5fa3a20cf6d7e940d6",
+          "top_score": 0.6751922965049744,
+          "candidate": "12_22.jpg"
+        },
+        {
+          "query": "FB/FB_5.jpg",
+          "sha256": "bcec8aea55bed4ee9eed90f3ae5f3a9e97fe7bf8680a494dc50175e0df20c0d9",
+          "top_score": 0.641533613204956,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FB/FB_6.jpg",
+          "sha256": "9aa063795262416d3c23539302fba75eb65f38ea68381174d25c7383e670ec94",
+          "top_score": 0.6264443397521973,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FB/FB_7.jpg",
+          "sha256": "e950b28882a9595044d4c224cdd7baa9a03079df79d879db437fa3c0a65eb18d",
+          "top_score": 0.58636474609375,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FB/FB_8.jpg",
+          "sha256": "76e0c1cddb60bd2624fdd272204276a46fbb39efda8b8fa332868b0525ebf62a",
+          "top_score": 0.6024615168571472,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FB/FB_9.jpg",
+          "sha256": "0c1b014b4953251c993d7626a7732bc881883226e94c1380e2ea703719ac6a5b",
+          "top_score": 0.5454584956169128,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "FC/FC_1.jpg",
+          "sha256": "5081e37912ee656f93c9ce5d69660a345b4d10c76dc9ff74162fe5658fd559d9",
+          "top_score": 0.5390805006027222,
+          "candidate": "5_3.jpg"
+        },
+        {
+          "query": "FC/FC_10.jpg",
+          "sha256": "e27e5c7bce504f2dc1e8a76677a9f0160ab2550409fb6ca85bc6b8d4926ff77f",
+          "top_score": 0.5844219923019409,
+          "candidate": "36_7.jpg"
+        },
+        {
+          "query": "FC/FC_11.jpg",
+          "sha256": "e57b6df8f6bcc18d4a59afca4d59bf7a698fba41be5f83c5cd02f3cb6c9504b4",
+          "top_score": 0.6254301071166992,
+          "candidate": "12_22.jpg"
+        },
+        {
+          "query": "FC/FC_12.jpg",
+          "sha256": "acf6eec7365059183118295e15a7ee7e8ff8e008ce80a91cf63b271856222936",
+          "top_score": 0.5835778713226318,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "FC/FC_13.jpg",
+          "sha256": "56d5020021b6950233c1d3d3663f50314bc79edb2adc2a8ab3f94fca3529fe55",
+          "top_score": 0.6403313279151917,
+          "candidate": "12_32.jpg"
+        },
+        {
+          "query": "FC/FC_14.jpg",
+          "sha256": "3cc7349d5340a0ce4170cd721b18fac64488512218b27f04ad5f1c8d79a68e44",
+          "top_score": 0.6663027405738831,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "FC/FC_15.jpg",
+          "sha256": "ba5b605f14366c518254d81b414f3de29f09126f8fd16e0d5dbd5d9c2737218b",
+          "top_score": 0.6095938682556152,
+          "candidate": "36_8.jpg"
+        },
+        {
+          "query": "FC/FC_16.jpg",
+          "sha256": "3c394b9f2116f7399fa32375440ab41afd9c09fc6abd7b2f02a552686b14ac96",
+          "top_score": 0.7063175439834595,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "FC/FC_17.jpg",
+          "sha256": "03ba01462a613001f6baad5834493c3f90f083d01d19c16eb35dc06792cbb7c6",
+          "top_score": 0.6505956649780273,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "FC/FC_18.jpg",
+          "sha256": "9267f1fc1ba2aac7ab81c5cd6de0d331c03ae0678059e921d85b5c44f06411fb",
+          "top_score": 0.6088032722473145,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FC/FC_19.jpg",
+          "sha256": "10ed8f3594a0a9ec45923621993a8f9652049068574827314fd1441a99c3d334",
+          "top_score": 0.653296709060669,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FC/FC_2.jpg",
+          "sha256": "6e0a434f1f9ddae292ab2124cf3e6320785269ba9080528824e533d60be73833",
+          "top_score": 0.6629213690757751,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "FC/FC_20.jpg",
+          "sha256": "c241680fd8fb0ffa684021c600d9c6e57ec1c146831bf887aff952f312da6d1f",
+          "top_score": 0.6655570864677429,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FC/FC_3.jpg",
+          "sha256": "5b28c02b371483690832364776065064717e5827b3f21575bf2bd2cdf18a2443",
+          "top_score": 0.5968283414840698,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FC/FC_4.jpg",
+          "sha256": "8f3ef5be0e406d9044240edb5b7b1cb73bace1f0dd1b199253b337bf0478497a",
+          "top_score": 0.6309205293655396,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FC/FC_5.jpg",
+          "sha256": "0fe31a76375f93de3b28edcdc2214f8ace85f0226baff1ecdf13aa55cc67de1e",
+          "top_score": 0.6577940583229065,
+          "candidate": "35_3.jpg"
+        },
+        {
+          "query": "FC/FC_6.jpg",
+          "sha256": "20f5d7707732f4757793773c725ca0238fb4f0743c6da0836b13f782da43df1d",
+          "top_score": 0.6138787269592285,
+          "candidate": "35_7.jpg"
+        },
+        {
+          "query": "FC/FC_7.jpg",
+          "sha256": "9406faaa41eab08a755eb95923bd3175f503c4161346cad79db84f95afd70979",
+          "top_score": 0.7153968214988708,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FC/FC_8.jpg",
+          "sha256": "600b395e9dca1957abfab6a83d8661f55d7c3f68e21c537156f73b35250af5bb",
+          "top_score": 0.669042706489563,
+          "candidate": "12_22.jpg"
+        },
+        {
+          "query": "FC/FC_9.jpg",
+          "sha256": "2d9e7dd78cea298e7bfb3ca4a34c11ef79b9a2d288bd980af98d0e23c9770ed1",
+          "top_score": 0.6017081141471863,
+          "candidate": "35_3.jpg"
+        },
+        {
+          "query": "FN/FN_1.jpg",
+          "sha256": "96ec4e6e825379d4b9a4586c9f07cd44767e5304aac94a1de41f3fc0f0f27cbf",
+          "top_score": 0.612612247467041,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FN/FN_10.jpg",
+          "sha256": "7e066da2f635fe9dc9546c900111f8fdb9268f02c52f2540a217585d16bed204",
+          "top_score": 0.6025359630584717,
+          "candidate": "35_3.jpg"
+        },
+        {
+          "query": "FN/FN_11.jpg",
+          "sha256": "74cc20ef843bddf267c6ba5e6d89647adace6cf989f4c4b91587e499bb7918d1",
+          "top_score": 0.590744137763977,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "FN/FN_12.jpg",
+          "sha256": "d28e96b813484fb374792fb24245e0763c28457f87547d1600fa5f3c7d411b8a",
+          "top_score": 0.6134734749794006,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FN/FN_13.jpg",
+          "sha256": "9c3db3557d767087b9013e34c8f40c3954a031679b8b947b173d2c487bfd6d4d",
+          "top_score": 0.6382735371589661,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FN/FN_14.jpg",
+          "sha256": "5250e1ba88d3926541412c16bc7a4e71cb416b26578944e5e54f1b43793aa213",
+          "top_score": 0.6320898532867432,
+          "candidate": "35_4.jpg"
+        },
+        {
+          "query": "FN/FN_15.jpg",
+          "sha256": "76b9c4682a167f25a0fa7dee5e30917700c7ad35daf9771cdd85ee2c84481b46",
+          "top_score": 0.6564326286315918,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "FN/FN_16.jpg",
+          "sha256": "02eb408d51d5e813f75d8ad8cae0b170895f9fbf6f86995fd4ae1eda40856d8b",
+          "top_score": 0.6220941543579102,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FN/FN_17.jpg",
+          "sha256": "6abfc6f1091d66f74716e907e36af533f5b43e8661e4d560cf25bac7142fa92a",
+          "top_score": 0.633867621421814,
+          "candidate": "34_2.jpg"
+        },
+        {
+          "query": "FN/FN_18.jpg",
+          "sha256": "d23defa13de430abebbb1bb5416d89f1047d5d3f702b97ad7d5f45886998e70a",
+          "top_score": 0.6297036409378052,
+          "candidate": "35_4.jpg"
+        },
+        {
+          "query": "FN/FN_19.jpg",
+          "sha256": "32ceed92d3654db3b7481bf8f47e17cd9e9a0c86da7c6257a73d04c685391e97",
+          "top_score": 0.5874151587486267,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "FN/FN_2.jpg",
+          "sha256": "7432b183597ed8daeb4259c854536562f8af1fe59e9cc19aecd7d50ffd291afb",
+          "top_score": 0.6196008920669556,
+          "candidate": "35_4.jpg"
+        },
+        {
+          "query": "FN/FN_20.jpg",
+          "sha256": "31cba9e6895dc8c59518249abccc37579a7afc960183cf65415d878bb5dde7c6",
+          "top_score": 0.5679365396499634,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "FN/FN_3.jpg",
+          "sha256": "f40fde22f823a7cbe4efb8bd8f3e1489be01ac47f93ac5a153df960ff66d17c8",
+          "top_score": 0.6541683673858643,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "FN/FN_4.jpg",
+          "sha256": "11550bde6772766baf92ebd2eb0d083b81cd7f02ec1ef627d684241ed484eaa6",
+          "top_score": 0.6748040914535522,
+          "candidate": "12_19.jpg"
+        },
+        {
+          "query": "FN/FN_5.jpg",
+          "sha256": "4be66bca29d5e9e77e35f7799578a097b301c2ec96669a4186f0a9c27aee4afe",
+          "top_score": 0.6352498531341553,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "FN/FN_6.jpg",
+          "sha256": "5df27cc0a47774978aeaddfe41260979fd74b5dc70a4638be8b4e3a635b9ae08",
+          "top_score": 0.5004913210868835,
+          "candidate": "31_7.jpg"
+        },
+        {
+          "query": "FN/FN_7.jpg",
+          "sha256": "480b060db18c4eab7c35e4decbddea2c4002e2c19116a30f06147c32c36fa097",
+          "top_score": 0.5977655053138733,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "FN/FN_8.jpg",
+          "sha256": "23efdf45e4d6d66f920cb2e0c2d35d10805ffb6f408851398cd3fcb4f73a0e62",
+          "top_score": 0.609309196472168,
+          "candidate": "34_2.jpg"
+        },
+        {
+          "query": "FN/FN_9.jpg",
+          "sha256": "559b96cce9bb7e40125ae9559d16c5469c978e852adc92dddec54f9d04c094af",
+          "top_score": 0.6584853529930115,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RB/RB_1.jpg",
+          "sha256": "e136205fe71e94bbc6685fa472eba9c3993c933b1440dfbe60c58a3562f2b29e",
+          "top_score": 0.6876245141029358,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RB/RB_10.jpg",
+          "sha256": "a33483793389f785f9c442db0b48ec6dadd87df4a75755d959cb0da8be07f63e",
+          "top_score": 0.5577251315116882,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "RB/RB_11.jpg",
+          "sha256": "44a27f1cea76e55aa8d66112697a1422c410e8bc01c3974ddc0f3171e5fde997",
+          "top_score": 0.55378258228302,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RB/RB_12.jpg",
+          "sha256": "ce6842768e53c8533967ba3d4093143e77399df79d06f33cd24d9bfddaa26e7a",
+          "top_score": 0.6385636329650879,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "RB/RB_13.jpg",
+          "sha256": "1bd28b51b9a142d9d1458f830cc13574a5cbbbd3e1bfdce4cba79bc64e7dcbe0",
+          "top_score": 0.6350711584091187,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RB/RB_14.jpg",
+          "sha256": "7cc07b372ee1e1cc32e7da3ed53d9a07a26a695c0e488881f4803cbfddf866f9",
+          "top_score": 0.6287494897842407,
+          "candidate": "31_5.jpg"
+        },
+        {
+          "query": "RB/RB_15.jpg",
+          "sha256": "54f31af224b2658a5080b0485d81549823d0e91b32e0a43f7152ae5af6f6b51b",
+          "top_score": 0.5939323902130127,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RB/RB_16.jpg",
+          "sha256": "e2bc76f35af0f27d672a4150c54d831b0c6c95d4ea9ac3e3f8c728d5684128ab",
+          "top_score": 0.7083845734596252,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RB/RB_17.jpg",
+          "sha256": "ed8a5d380be58528e794693e7e35d4f02c318b4453239d1bb66d68d280e432cf",
+          "top_score": 0.6620769500732422,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RB/RB_18.jpg",
+          "sha256": "1713009be53da11dbb5db78eb8a405deb222debcf32fe71575a120387a112d3e",
+          "top_score": 0.6772353649139404,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RB/RB_19.jpg",
+          "sha256": "1302bfd74a44797dec0bde6694c2f1cc76ebaf0f4184cf8b40ce678b59ea62c4",
+          "top_score": 0.5755487680435181,
+          "candidate": "35_4.jpg"
+        },
+        {
+          "query": "RB/RB_2.jpg",
+          "sha256": "7beec8567b7ce8290047e05301186fa3121913f134906ce3b8253353aafacd1f",
+          "top_score": 0.5967367887496948,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "RB/RB_20.jpg",
+          "sha256": "1ba199e9079e8203b5661527585b3572a4a8b208eb7962ab1958e4e54abc201d",
+          "top_score": 0.582770049571991,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RB/RB_3.jpg",
+          "sha256": "b1b843b542a79fd34a2c965454bcf2f74f5ea02dc313008cfb01c9c3a224b78c",
+          "top_score": 0.6847346425056458,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RB/RB_4.jpg",
+          "sha256": "d2231b8bc69558518a28553a7ea4dc1ad75f860fc2ea620cae0fdd5e90d4f75f",
+          "top_score": 0.6007326245307922,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RB/RB_5.jpg",
+          "sha256": "27ce5e6fa738fa7c227480ba273336de090145325633cf5e83728dec584bde1d",
+          "top_score": 0.5793471336364746,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RB/RB_6.jpg",
+          "sha256": "514d09671ba74a984ef8882bf3e506a09ccb60e48d8c28a77900252667001366",
+          "top_score": 0.5788136720657349,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RB/RB_7.jpg",
+          "sha256": "cb00961cca7de290f126c09412e7919950e2419eede829a74a9fd5257494110d",
+          "top_score": 0.6212680339813232,
+          "candidate": "35_6.jpg"
+        },
+        {
+          "query": "RB/RB_8.jpg",
+          "sha256": "44b400a8d43e2cb7e51eacc2905dced686abd59940ff39a29dbe0b5911e618de",
+          "top_score": 0.636641263961792,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RB/RB_9.jpg",
+          "sha256": "a53ace9820875f620cd6b263209cbc67d484471b5dfffcf09680b4aaa596e74b",
+          "top_score": 0.6287964582443237,
+          "candidate": "34_2.jpg"
+        },
+        {
+          "query": "RC/RC_1.jpg",
+          "sha256": "d948a3733bbbe7154bb6df19a0c398236b2b64022e23825789ae79571f75b7e8",
+          "top_score": 0.6416996717453003,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RC/RC_10.jpg",
+          "sha256": "7ba714cae8301f31033f5a5ddc9697e12ee57a9fb8dd8ec6d80d549057698f09",
+          "top_score": 0.6233447790145874,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RC/RC_11.jpg",
+          "sha256": "579903d7875726497523241e494fbb1aaffe16128ec6f1c74630a173fdd8393a",
+          "top_score": 0.7175306081771851,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RC/RC_12.jpg",
+          "sha256": "bff1199e9890e0f4fccee630c7ff40dc02fe231c08cfd1fa43d743887b333c21",
+          "top_score": 0.5934172868728638,
+          "candidate": "35_6.jpg"
+        },
+        {
+          "query": "RC/RC_13.jpg",
+          "sha256": "3153134e15741494f85ce757edd200847ac97fe42ef74c10b6c526bd18f1154b",
+          "top_score": 0.589492678642273,
+          "candidate": "35_5.jpg"
+        },
+        {
+          "query": "RC/RC_15.jpg",
+          "sha256": "fb64186a9f7a09e05adb63b2a4ef6199ea86f470e103adeabe133430c0bb5811",
+          "top_score": 0.7062681317329407,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RC/RC_16.jpg",
+          "sha256": "bcf2afe8eca7086908cbffde8159481b5689cf50ab407825e4521a9d8a338740",
+          "top_score": 0.7093620300292969,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RC/RC_17.jpg",
+          "sha256": "a8e8974e4edef23b113f09d450a68213dd379fefa881c98b955d9193dd4ef6fa",
+          "top_score": 0.6113144159317017,
+          "candidate": "12_31.jpg"
+        },
+        {
+          "query": "RC/RC_18.jpg",
+          "sha256": "2d76d6514b1014c47fac71b1e9fb3ff29edf28c0b4ba0bfbf607ae6cbb50e412",
+          "top_score": 0.5782783031463623,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RC/RC_19.jpg",
+          "sha256": "9e580792208af96cb1700e976c24e5b76ea97709a0b19dac5a349f5bab760392",
+          "top_score": 0.5837435722351074,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RC/RC_2.jpg",
+          "sha256": "f82d25824a16b0b2696614646ab2780c04bac47d8592473a01949bebcf0884ec",
+          "top_score": 0.6054319143295288,
+          "candidate": "35_11.jpg"
+        },
+        {
+          "query": "RC/RC_20.jpg",
+          "sha256": "0d87fd3b0106c893c025e123c5ebada4a1bec5b84844a7afc678be42ca14294d",
+          "top_score": 0.5646877884864807,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RC/RC_3.jpg",
+          "sha256": "3fa5a4f1f3adec135dfcadda2cd7aa8b5c587891ca8123d89c94bf3389f5ad6b",
+          "top_score": 0.6528976559638977,
+          "candidate": "36_8.jpg"
+        },
+        {
+          "query": "RC/RC_4.jpg",
+          "sha256": "997c4663c3f86ba0e037726330ca5ae0aa9e9846bcfee37dfce5630e35cb7298",
+          "top_score": 0.6577443480491638,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RC/RC_5.jpg",
+          "sha256": "31e49de8ad360ae4f6d6922cf9df07eacf026994379ee5b2f87c0376c3a1f77a",
+          "top_score": 0.7333176136016846,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RC/RC_6.jpg",
+          "sha256": "878303cfafb61665f1142824c42d19fe2127e58c826bc5dcc45b5a6af271a779",
+          "top_score": 0.6025951504707336,
+          "candidate": "35_6.jpg"
+        },
+        {
+          "query": "RC/RC_7.jpg",
+          "sha256": "b140239767aee9f89c032aad672144c2bb5f70a683ac7401180d28c8132ecb81",
+          "top_score": 0.6004799604415894,
+          "candidate": "31_2.jpg"
+        },
+        {
+          "query": "RC/RC_8.jpg",
+          "sha256": "555bcb7e40822560cfccecbe575c485a8bbecb28122acc64faffb51ecc8cf363",
+          "top_score": 0.6660265922546387,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RC/RC_9.jpg",
+          "sha256": "174f1f9bd0d54d741c04db98b3f201273d01988affda09a433a07875043f5b3d",
+          "top_score": 0.7096466422080994,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RN/RN_1.jpg",
+          "sha256": "864f7e8883cd15032d62fb31fcc416a7bbd9dd59ead11cdcb811824665932409",
+          "top_score": 0.5689826011657715,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RN/RN_10.jpg",
+          "sha256": "6493aecaf0726d8fac35d45dd9684a0d704928ad29afbb70c1c3b3dd983e9d76",
+          "top_score": 0.606115996837616,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RN/RN_11.jpg",
+          "sha256": "ae1ae909e42fe528b28beabfc073d3fb8244e9a24c1bac54a2893f1f6c4a9108",
+          "top_score": 0.5804080367088318,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RN/RN_12.jpg",
+          "sha256": "415e7dbdab512c02c1dd3b5b2494239d4b5cc249b945e3381604996f2d28b0e9",
+          "top_score": 0.611968994140625,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RN/RN_13.jpg",
+          "sha256": "aaca2cbe9cd97c9256c5f8f5c0b5c63b82372eb28e45b35d1c99e5fbd38e853d",
+          "top_score": 0.6324324607849121,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RN/RN_14.jpg",
+          "sha256": "8e77c8960a7423bc18a321726c4f82b31552a351f86d0713f969fd57e4b53dcc",
+          "top_score": 0.5719021558761597,
+          "candidate": "25_9.jpg"
+        },
+        {
+          "query": "RN/RN_15.jpg",
+          "sha256": "bc637b82484dedc93301138dbea1cd1aef0c0cb2bac581bb5b6b3c95dac1ae37",
+          "top_score": 0.6269299983978271,
+          "candidate": "12_17.jpg"
+        },
+        {
+          "query": "RN/RN_16.jpg",
+          "sha256": "1bae62f9fb50ef31258ead11cf489e22f731790f12788570e043bdfe12299028",
+          "top_score": 0.6205980777740479,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RN/RN_17.jpg",
+          "sha256": "9a25e27d5ff033c6580fb031e16df51d08895adeb9d30b3f989334710f3822f8",
+          "top_score": 0.6295512914657593,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RN/RN_18.jpg",
+          "sha256": "f249ce5a8f828ddb9967fbd118f797d32f10323d281c887811d86be2b330538a",
+          "top_score": 0.5926510095596313,
+          "candidate": "36_2.jpg"
+        },
+        {
+          "query": "RN/RN_19.jpg",
+          "sha256": "102bb661c5afacd5b03c7c0ee3c0eed1b12fd8b3767c823b91a628d8f87b7e61",
+          "top_score": 0.5594155788421631,
+          "candidate": "35_10.jpg"
+        },
+        {
+          "query": "RN/RN_2.jpg",
+          "sha256": "23e38b9c3a9df65ccfbe0bee08edb11dc42e0485c7946ce1db56993a4676cd70",
+          "top_score": 0.6134284734725952,
+          "candidate": "36_17.jpg"
+        },
+        {
+          "query": "RN/RN_20.jpg",
+          "sha256": "28c4937d2547f51be2a13cb0a965c63186d7d562abc73e03dc4c077a11c02151",
+          "top_score": 0.6096264123916626,
+          "candidate": "5_2.jpg"
+        },
+        {
+          "query": "RN/RN_3.jpg",
+          "sha256": "19a82cd417f01cec30fef252452e35d73054cb8c266bbc9992a86222eec2ab55",
+          "top_score": 0.5180628299713135,
+          "candidate": "36_9.jpg"
+        }
+      ]
+    }
+  }
+}

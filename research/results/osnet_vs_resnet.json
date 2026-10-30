@@ -1,0 +1,16 @@
+{
+  "scope": "Paired comparison on identical 420-photo leave-one-out protocol",
+  "delta_recall_at_1": 0.04761904761904756,
+  "delta_map": 0.16147752271290705,
+  "identity_cluster_bootstrap_95_intervals": [
+    [
+      0.01876633713136729,
+      0.11846705609197353
+    ],
+    [
+      0.08084295162340562,
+      0.21113376441503595
+    ]
+  ],
+  "note": "Sampling uncertainty only. No novelty claim or proof of absence of pretrained-model training overlap. OSNet is prior work."
+}

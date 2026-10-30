@@ -1,141 +1,78 @@
-"""
-License Plate Reader Module
-
-Reads Indian license plates from vehicle images using EasyOCR (optional).
-Falls back to returning empty results if EasyOCR is not installed.
-
-Indian plate format: XX-00-XX-0000
-Examples: MH02AB1234, DL7CQ1234, KA01MH9999
-
-Cross-references detected plate with the claimed vehicle's registration number
-to detect plate_number_mismatch fraud.
-"""
-
+"""Offline English OCR with confidence-gated Indian registration candidates."""
+import importlib.util
+import os
 import re
-from typing import Optional
+import threading
+from pathlib import Path
 
-# Indian license plate regex pattern
-# Format: 2 letters (state) + 1-2 digits (district) + 0-3 letters (series) + 4 digits (number)
-INDIAN_PLATE_PATTERN = re.compile(
-    r"[A-Z]{2}\s*\d{1,2}\s*[A-Z]{0,3}\s*\d{4}"
-)
+MODEL_DIR=Path(os.environ.get('OCR_MODEL_DIR',str(Path(__file__).resolve().parents[1]/'weights/ocr')))
+EASYOCR_AVAILABLE=importlib.util.find_spec('easyocr') is not None
+INDIAN_PLATE_PATTERN=re.compile(r'(?<![A-Z0-9])[A-Z]{2}\s*\d{1,2}\s*[A-Z]{0,3}\s*\d{4}(?![A-Z0-9])')
+_reader=None
+_lock=threading.RLock()
+_reader_error=None
 
-# Try to import easyocr - gracefully handle if not installed
-try:
-    import easyocr
-    EASYOCR_AVAILABLE = True
-except ImportError:
-    EASYOCR_AVAILABLE = False
 
-# Module-level reader instance (lazy loaded)
-_reader = None
+def status():
+    ready=EASYOCR_AVAILABLE and all((MODEL_DIR/name).is_file() for name in ('craft_mlt_25k.pth','english_g2.pth'))
+    return {'available':ready and _reader_error is None,'method':'easyocr_offline',
+            'reason':_reader_error or (None if ready else 'package_or_weights_missing'),
+            'limitation':'English OCR and Indian registration patterns; no readable plate is inconclusive.'}
 
 
 def _get_reader():
-    """Lazy-load EasyOCR reader to avoid startup overhead."""
-    global _reader
-    if _reader is None and EASYOCR_AVAILABLE:
-        _reader = easyocr.Reader(["en"], gpu=False)
-    return _reader
+    global _reader, _reader_error
+    with _lock:
+        if _reader is None and status()['available']:
+            try:
+                import easyocr
+                _reader=easyocr.Reader(['en'],gpu=False,model_storage_directory=str(MODEL_DIR),download_enabled=False,verbose=False)
+            except Exception:
+                _reader_error='weights_load_failed'
+        return _reader
 
 
-def normalize_plate(plate: str) -> str:
-    """
-    Normalize a plate number by removing spaces, hyphens, and converting to uppercase.
-    MH 02 AB 1234 -> MH02AB1234
-    MH-02-AB-1234 -> MH02AB1234
-    """
-    return re.sub(r"[\s\-]", "", plate.upper().strip())
+def normalize_plate(plate):
+    return re.sub(r'[\s\-]', '',plate.upper().strip())
 
 
-def extract_plates_from_text(text: str) -> list[str]:
-    """Extract Indian license plate patterns from arbitrary text."""
-    matches = INDIAN_PLATE_PATTERN.findall(text.upper())
-    # Normalize each match
-    return [normalize_plate(m) for m in matches]
+def extract_plates_from_text(text):
+    strict=[normalize_plate(m) for m in INDIAN_PLATE_PATTERN.findall(text.upper())]
+    # Preserve letter positions; fix common OCR glyph confusions only where
+    # Indian registrations require digits. These remain reviewable candidates.
+    pattern=re.compile(r'(?<![A-Z0-9])([A-Z]{2})\s*([0-9OQIZSB]{1,2})\s*([A-Z]{0,3})\s*([0-9OQIZSB]{4})(?![A-Z0-9])')
+    digits=str.maketrans({'O':'0','Q':'0','I':'1','Z':'2','S':'5','B':'8'})
+    for state,district,series,number in pattern.findall(text.upper()):
+        strict.append(state+district.translate(digits)+series+number.translate(digits))
+    return list(dict.fromkeys(strict))
 
 
-def read_plates_from_image(image_bytes: bytes) -> list[str]:
-    """
-    Attempt to read license plate numbers from an image.
-
-    Uses EasyOCR if available, otherwise returns empty list.
-
-    Args:
-        image_bytes: Raw image bytes (JPEG, PNG, etc.)
-
-    Returns:
-        List of detected Indian license plate numbers (normalized).
-    """
-    if not EASYOCR_AVAILABLE:
-        return []
-
-    reader = _get_reader()
-    if reader is None:
-        return []
-
-    try:
-        # EasyOCR can read from bytes via numpy array
-        import numpy as np
-        from PIL import Image
-        import io
-
-        image = Image.open(io.BytesIO(image_bytes))
-        image_np = np.array(image)
-
-        # Run OCR
-        results = reader.readtext(image_np, detail=0)
-
-        # Combine all detected text and search for plate patterns
-        all_text = " ".join(results)
-        plates = extract_plates_from_text(all_text)
-
-        return plates
-
-    except Exception as e:
-        print(f"⚠️  Plate reader error: {e}")
-        return []
+def read_plate_evidence(image_bytes):
+    reader=_get_reader()
+    if reader is None:return {'plates':[],'raw_text':[]}
+    from ml.image_input import open_upload
+    import numpy as np
+    with open_upload(image_bytes) as image:
+        image=image.convert('RGB');image.thumbnail((1600,1600));array=np.array(image)
+    with _lock:
+        rows=reader.readtext(array,detail=1)
+    # Low-confidence text must not create a mismatched-registration flag.
+    text=[str(row[1]) for row in rows if float(row[2])>=.6]
+    candidates=[]
+    for line in [*text, ' '.join(text)]: candidates.extend(extract_plates_from_text(line))
+    return {'plates':list(dict.fromkeys(candidates)),'raw_text':[{'text':str(row[1]),'confidence':float(row[2])} for row in rows]}
 
 
-def check_plate_match(
-    image_bytes: bytes,
-    claimed_registration: str,
-) -> dict:
-    """
-    Detect plates in an image and check against the claimed registration number.
+def read_plates_from_image(image_bytes):
+    return read_plate_evidence(image_bytes)['plates']
 
-    Args:
-        image_bytes: Raw image bytes
-        claimed_registration: The vehicle's registered plate number from the database
 
-    Returns:
-        {
-            "detected_plates": list of plates found in image,
-            "claimed_plate": normalized claimed registration,
-            "match": True/False/None (None if no plates detected),
-            "flag": "plate_number_mismatch" or None
-        }
-    """
-    detected_plates = read_plates_from_image(image_bytes)
-    claimed_normalized = normalize_plate(claimed_registration) if claimed_registration else ""
-
-    if not detected_plates or not claimed_normalized:
-        # Cannot determine match - no plates detected or no claimed plate
-        return {
-            "detected_plates": detected_plates,
-            "claimed_plate": claimed_normalized,
-            "match": None,
-            "flag": None,
-        }
-
-    # Check if any detected plate matches the claimed registration
-    match_found = any(
-        plate == claimed_normalized for plate in detected_plates
-    )
-
-    return {
-        "detected_plates": detected_plates,
-        "claimed_plate": claimed_normalized,
-        "match": match_found,
-        "flag": "plate_number_mismatch" if not match_found else None,
-    }
+def check_plate_match(image_bytes, claimed_registration):
+    evidence=read_plate_evidence(image_bytes)
+    detected=evidence['plates']
+    claimed=normalize_plate(claimed_registration) if claimed_registration else ''
+    match=any(plate==claimed for plate in detected) if detected and claimed else None
+    return {'detected_plates':detected,'raw_ocr_text':evidence['raw_text'],'claimed_plate':claimed,'match':match,
+            'flag':'plate_number_mismatch' if match is False else None,
+            'detail':'No readable high-confidence registration; inconclusive.' if match is None else None,
+            'method':'easyocr_offline','normalization':'Common OCR glyph confusions corrected only in digit positions; confirm the original photograph.','score_type':'uncalibrated_ocr_confidence'}

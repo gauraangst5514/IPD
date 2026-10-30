@@ -10,7 +10,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState("claimant");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +36,7 @@ export default function LoginPage() {
           email,
           password,
           full_name: fullName,
-          role,
+          role: "claimant",
         });
         login(res.data.access_token, res.data.user_id, res.data.role, res.data.full_name);
       }
@@ -68,16 +67,15 @@ export default function LoginPage() {
               AI-Powered Insurance<br />Claim Assessment
             </h2>
             <p className="text-slate-300 text-[15px] leading-relaxed">
-              Detect vehicle damage, estimate repair costs, and identify fraud — all in seconds.
-              Built for the Indian insurance market.
+              Assess visible vehicle damage, review photographic evidence, and support claim investigations.
             </p>
 
             <div className="mt-10 space-y-4">
               {[
                 "YOLOv8 damage detection with 6 damage classes",
-                "Vehicle make verification (49 makes, 93% accuracy)",
-                "7-layer fraud detection pipeline",
-                "India-specific cost estimation engine",
+                "Historical photograph reuse evidence",
+                "Separate learned claim-model research baselines",
+                "Indicative repair-cost bands and human review",
               ].map((feature) => (
                 <div key={feature} className="flex items-center gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary-400" />
@@ -167,16 +165,7 @@ export default function LoginPage() {
 
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Role</label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="input"
-                >
-                  <option value="claimant">Claimant (Policy Holder)</option>
-                  <option value="assessor">Assessor</option>
-                  <option value="admin">Admin</option>
-                </select>
+                <p className="text-sm text-slate-500">Registration creates a claimant account. Assessors use their provisioned accounts.</p>
               </div>
             )}
 

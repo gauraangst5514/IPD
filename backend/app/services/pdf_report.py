@@ -115,8 +115,8 @@ def generate_claim_pdf(claim: dict, images: list[dict] = None) -> bytes:
 
         assessment_data = [
             ["Damage Type", (claim.get("damage_type") or "").title()],
-            ["Severity", (claim.get("severity") or "").title()],
-            ["Confidence", f"{(claim.get('confidence_score') or 0) * 100:.1f}%"],
+            ["Estimated Severity", (claim.get("severity") or "Not assessed").title()],
+            ["Detection Confidence", f"{claim['confidence_score'] * 100:.1f}%" if claim.get("confidence_score") is not None else "Not assessed"],
         ]
 
         assess_table = Table(assessment_data, colWidths=[4.5 * cm, 12 * cm])
@@ -131,7 +131,7 @@ def generate_claim_pdf(claim: dict, images: list[dict] = None) -> bytes:
 
     # ─── Cost Estimate ────────────────────────────────────────
     if claim.get("estimated_cost_min"):
-        elements.append(Paragraph("Cost Estimate", styles["SectionHeader"]))
+        elements.append(Paragraph("Indicative Repair-Cost Band", styles["SectionHeader"]))
 
         cost_min = claim.get("estimated_cost_min", 0)
         cost_max = claim.get("estimated_cost_max", 0)
@@ -155,32 +155,20 @@ def generate_claim_pdf(claim: dict, images: list[dict] = None) -> bytes:
         elements.append(cost_table)
         elements.append(Spacer(1, 4 * mm))
 
-    # ─── Fraud Analysis ───────────────────────────────────────
-    fraud_score = claim.get("fraud_risk_score")
-    if fraud_score is not None:
-        elements.append(Paragraph("Fraud Risk Analysis", styles["SectionHeader"]))
-
-        fraud_level = "HIGH" if fraud_score > 0.7 else "MEDIUM" if fraud_score > 0.3 else "LOW"
-        fraud_color = RED if fraud_score > 0.7 else ORANGE if fraud_score > 0.3 else GREEN
-
-        fraud_data = [
-            ["Overall Risk", f"{fraud_level} ({fraud_score * 100:.1f}%)"],
-        ]
-
-        fraud_flags = claim.get("fraud_flags") or {}
-        if fraud_flags:
-            flags_str = ", ".join(k.replace("_", " ").title() for k, v in fraud_flags.items() if v)
-            fraud_data.append(["Flags Detected", flags_str or "None"])
-
-        fraud_table = Table(fraud_data, colWidths=[4.5 * cm, 12 * cm])
-        fraud_table.setStyle(TableStyle([
-            ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
-            ("FONTSIZE", (0, 0), (-1, -1), 9),
-            ("TEXTCOLOR", (0, 0), (0, -1), GRAY),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-        ]))
-        elements.append(fraud_table)
-        elements.append(Spacer(1, 4 * mm))
+    # Evidence observations replace the legacy uncalibrated risk percentage.
+    from xml.sax.saxutils import escape
+    elements.append(Paragraph("Claim Evidence Review", styles["SectionHeader"]))
+    elements.append(Paragraph("Fraud probability has not been estimated.", styles["Normal"]))
+    indicators = (claim.get("fraud_flags") or {}).get("_indicators", [])
+    if not indicators:
+        elements.append(Paragraph("Reprocess this claim to generate evidence indicators.", styles["Normal"]))
+    for item in indicators:
+        text = f"{item.get('code', '').replace('_', ' ')} [{item.get('status', 'unavailable')}]: {item.get('detail', '')}"
+        elements.append(Paragraph(escape(text), styles["Normal"]))
+        for match in item.get("evidence", {}).get("matches", []):
+            detail = f"Matching claim: {match['claim_id']}; image: {match['image_id']}; type: {match['match_type']}"
+            elements.append(Paragraph(escape(detail), styles["Normal"]))
+    elements.append(Spacer(1, 4 * mm))
 
     # ─── Images Summary ───────────────────────────────────────
     claim_images = claim.get("images") or []
@@ -193,8 +181,8 @@ def generate_claim_pdf(claim: dict, images: list[dict] = None) -> bytes:
                 str(i),
                 (img.get("damage_type") or "—").title(),
                 (img.get("severity") or "—").title(),
-                f"{(img.get('confidence') or 0) * 100:.0f}%",
-                "Yes" if img.get("is_manipulated") else "No",
+                f"{img['confidence'] * 100:.0f}%" if img.get("confidence") is not None else "Not assessed",
+                "Not assessed" if img.get("is_manipulated") is None else "Yes" if img["is_manipulated"] else "No",
             ])
 
         img_table = Table(img_data, colWidths=[1.5 * cm, 4 * cm, 3 * cm, 3 * cm, 3 * cm])

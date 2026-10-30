@@ -5,8 +5,25 @@ from sqlalchemy import select
 
 from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.auth import require_role
 
 router = APIRouter()
+
+
+@router.get("/infrastructure")
+async def infrastructure(db: AsyncSession = Depends(get_db),
+                         current_user: dict = Depends(require_role(["admin","assessor"]))):
+    from app.services.infrastructure import infrastructure_status
+    return await infrastructure_status(db)
+
+
+@router.get("/capabilities")
+async def capabilities(current_user: dict = Depends(get_current_user)):
+    """Report actual model availability rather than treating running as ready."""
+    from app.services.ml_client import get_ml_client
+    health = await get_ml_client().health_check()
+    return {"status": health.get("status", "unreachable"),
+            "components": health.get("components", {})}
 
 
 @router.get("/health")
@@ -46,14 +63,8 @@ async def get_stats(
         base.where(Claim.status == ClaimStatus.REJECTED)
     )).scalar() or 0
 
-    # Average fraud score (for assessors/admins)
+    # No trained/calibrated fraud probability is available.
     avg_fraud = None
-    if role in ("assessor", "admin"):
-        result = await db.execute(
-            select(func.avg(Claim.fraud_risk_score)).where(Claim.fraud_risk_score.isnot(None))
-        )
-        avg_fraud = result.scalar()
-        avg_fraud = round(avg_fraud, 3) if avg_fraud else 0.0
 
     # Recent claims (last 5)
     if role == "claimant":

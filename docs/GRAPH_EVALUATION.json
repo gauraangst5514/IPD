@@ -1,0 +1,31 @@
+{
+  "metrics": {
+    "n": 201,
+    "prevalence": 0.24875621890547264,
+    "pr_auc_average_precision": 0.7245216516486301,
+    "roc_auc": 0.9007947019867549,
+    "brier_score": 0.10043945571007902,
+    "precision": 0.6818181818181818,
+    "recall": 0.9,
+    "confusion": {
+      "tp": 45,
+      "fp": 21,
+      "tn": 130,
+      "fn": 5
+    },
+    "threshold": 0.23948636651039124,
+    "precision_at_20": 0.75
+  },
+  "selected_by": "validation_bce",
+  "epochs_run": 253,
+  "edge_semantics": "8 nearest training feature vectors",
+  "limitations": [
+    "Random-row public benchmark only; no prospective or insurer validation.",
+    "Garage and claimant IDs excluded: construction/provenance unverified.",
+    "Preprocessing and gradient fitting use training rows only.",
+    "Threshold selected on validation; test used once for reporting.",
+    "Model output uncalibrated. No causal or automatic denial interpretation.",
+    "Seven features inherited from teammate; selection was not independently validated.",
+    "Feature-neighbour graph only; not tested for collusion or recurrent physical damage."
+  ]
+}

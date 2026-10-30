@@ -21,6 +21,19 @@ class MLServiceClient:
     def __init__(self):
         self.base_url = settings.ML_SERVICE_URL
 
+    async def assess_structured(self, fields: dict) -> dict:
+        async with httpx.AsyncClient(trust_env=False, timeout=ML_TIMEOUT) as client:
+            response=await client.post(f"{self.base_url}/tabular/assess",json={"fields":fields})
+            response.raise_for_status()
+            return response.json()
+
+    async def explain_image(self, image_bytes: bytes) -> dict:
+        async with httpx.AsyncClient(trust_env=False, timeout=180) as client:
+            response=await client.post(f"{self.base_url}/saliency",
+                files={"file":("claim.png",image_bytes,"image/png")})
+            response.raise_for_status()
+            return response.json()
+
     async def analyze_image(
         self,
         image_bytes: bytes,
@@ -29,6 +42,7 @@ class MLServiceClient:
         vehicle_year: int = 2022,
         region: str = "mumbai",
         claim_id: str = "",
+        image_id: str = "",
         description: str = "",
         registration_number: str = "",
     ) -> dict:
@@ -47,11 +61,14 @@ class MLServiceClient:
             "cost_estimate_min": float,
             "cost_estimate_max": float,
             "cost_breakdown": dict,
-            "fraud_score": float,
+            "fraud_score": None,
+            "fraud_indicators": [...],
+            "review_required": bool,
+            "checks_complete": bool,
             "fraud_flags": [...]
         }
         """
-        async with httpx.AsyncClient(timeout=ML_TIMEOUT) as client:
+        async with httpx.AsyncClient(trust_env=False, timeout=ML_TIMEOUT) as client:
             response = await client.post(
                 f"{self.base_url}/analyze",
                 files={"file": (filename, image_bytes, "image/jpeg")},
@@ -60,6 +77,7 @@ class MLServiceClient:
                     "vehicle_year": str(vehicle_year),
                     "region": region,
                     "claim_id": claim_id,
+                    "image_id": image_id,
                     "description": description,
                     "registration_number": registration_number,
                 },
@@ -69,7 +87,7 @@ class MLServiceClient:
 
     async def get_annotated_image(self, image_bytes: bytes, filename: str = "image.jpg") -> bytes:
         """Get the annotated image (boxes drawn) from the ML service."""
-        async with httpx.AsyncClient(timeout=ML_TIMEOUT) as client:
+        async with httpx.AsyncClient(trust_env=False, timeout=ML_TIMEOUT) as client:
             response = await client.post(
                 f"{self.base_url}/detect",
                 files={"file": (filename, image_bytes, "image/jpeg")},
@@ -80,8 +98,9 @@ class MLServiceClient:
     async def health_check(self) -> dict:
         """Check if ML service is alive."""
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
+            async with httpx.AsyncClient(trust_env=False, timeout=5.0) as client:
                 response = await client.get(f"{self.base_url}/health")
+                response.raise_for_status()
                 return response.json()
         except Exception as e:
             return {"status": "unreachable", "error": str(e)}

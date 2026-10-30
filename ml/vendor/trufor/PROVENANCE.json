@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/grip-unina/TruFor",
+  "commit": "ae54475df6f41a491d7615100feb19263dec13f7",
+  "weights_md5": "7bee48f3476c75616c3c5721ab256ff8",
+  "modification": "Absolute model imports namespaced under ml.vendor.trufor; notices retained",
+  "license": "Informational and nonprofit use only; see LICENSE.txt"
+}

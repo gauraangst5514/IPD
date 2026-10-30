@@ -1,0 +1,33 @@
+{
+  "tqvcd": {
+    "success": true,
+    "returncode": 0
+  },
+  "resnet18": {
+    "success": true,
+    "returncode": 0
+  },
+  "lightglue_install": {
+    "success": false,
+    "returncode": 1
+  },
+  "lightglue_weights": {
+    "success": false,
+    "returncode": 1
+  },
+  "generali_released_folder": {
+    "success": false,
+    "returncode": 1
+  },
+  "cddm": {
+    "success": false,
+    "status": "author_license_form_required",
+    "source": "https://github.com/SCUT-CCNL/CDDM"
+  },
+  "cardd": {
+    "success": false,
+    "status": "author_license_form_required",
+    "source": "https://cardd-ustc.github.io/"
+  },
+  "generali_note": "Download is not evaluation: inspect archive labels, real/synthetic subsets, license and OSNet architecture before loading checkpoints."
+}

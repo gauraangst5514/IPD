@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:16,024
+The dashboard reports the checks that are actually installed. Vehicle make verification, plate OCR, TruFor forensic diagnostics, and historical photograph retrieval are now available. These are research aids for an investigator, and do not establish fraudulent intent.
+
+2
+00:00:16,024 --> 00:00:28,107
+Photo retrieval is restricted to assessors and administrators. The gallery shown here is a local research demonstration gallery. It is separate from the claim database and from the frozen offline evaluation corpus.
+
+3
+00:00:28,107 --> 00:00:41,065
+Select a photograph and choose three, five, or ten candidates. The application sends the bytes through the authenticated backend to the pretrained OSNet embedding model. The query preview helps the assessor confirm the selected evidence.
+
+4
+00:00:41,065 --> 00:00:56,245
+The model ranks historical photographs by cosine similarity. Similarity is not a probability. The cards include local feature counts and damage-region diagnostics. An unavailable detector result remains explicit instead of being replaced with an invented score.
+
+5
+00:00:56,245 --> 00:01:10,113
+Expand correspondence inspection to see keypoints and connecting lines between the query and a candidate. Coordinates are scaled to the rendered photographs. Matches may come from background or undamaged bodywork, so they do not prove the same physical damage.
+
+6
+00:01:10,113 --> 00:01:24,679
+The line toggle hides the overlay so the photographs can be inspected directly. Damage masking measures sensitivity to an artificial perturbation. It does not establish a causal explanation, image authenticity, or an automatic insurance decision.
+
+7
+00:01:24,679 --> 00:01:42,559
+Assessors can add photographs to the historical gallery. Exact duplicates are detected, and images survive a restart. The completed LightGlue experiment showed no improvement. Abstention and external sample tests are documented with uncertainty, and the final decision stays with the human investigator.

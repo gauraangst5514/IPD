@@ -17,7 +17,7 @@ export default function ReviewQueuePage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Review Queue</h1>
       <p className="text-gray-500 mb-6">
-        Claims sorted by fraud risk (highest first). Review AI assessment and make a decision.
+        Claims with review indicators appear first, then oldest submissions. Inspect the evidence before deciding.
       </p>
 
       {!claims?.length ? (
@@ -43,7 +43,7 @@ export default function ReviewQueuePage() {
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                  {(claim.fraud_risk_score || 0) > 0.5 && (
+                  {claim.status === "flagged" && (
                     <AlertTriangle className="w-5 h-5 text-red-500" />
                   )}
                   <div>
@@ -58,19 +58,9 @@ export default function ReviewQueuePage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  {claim.fraud_risk_score !== null && (
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        claim.fraud_risk_score > 0.7
-                          ? "bg-red-100 text-red-700"
-                          : claim.fraud_risk_score > 0.3
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
-                    >
-                      Risk: {(claim.fraud_risk_score * 100).toFixed(0)}%
-                    </span>
-                  )}
+                  <span className="px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-700">
+                    {claim.status === "flagged" ? "Review indicators" : "Awaiting review"}
+                  </span>
                   <ArrowRight className="w-4 h-4 text-gray-400" />
                 </div>
               </div>

@@ -1,0 +1,6 @@
+{
+  "postgres_photo_history_cross_instance": true,
+  "postgres_gallery_cross_instance": true,
+  "duplicate_detection_after_new_instance": true,
+  "synthetic_test_rows_removed": true
+}

@@ -41,8 +41,7 @@ def _build_html_body(claim_id: str, status: str, details: dict) -> str:
     cost_max = details.get("cost_estimate_max")
     cost_display = f"₹{cost_min:,.0f} - ₹{cost_max:,.0f}" if cost_min and cost_max else "Pending"
     severity = details.get("severity", "N/A")
-    fraud_score = details.get("fraud_risk_score")
-    fraud_display = f"{fraud_score:.0%}" if fraud_score is not None else "N/A"
+    fraud_display = "Not estimated; see claim evidence review"
     notes = details.get("notes", "")
 
     html = f"""
@@ -80,7 +79,7 @@ def _build_html_body(claim_id: str, status: str, details: dict) -> str:
                     <tr><td>Damage Type</td><td>{damage_summary}</td></tr>
                     <tr><td>Severity</td><td>{severity.title()}</td></tr>
                     <tr><td>Estimated Cost</td><td>{cost_display}</td></tr>
-                    <tr><td>Fraud Risk</td><td>{fraud_display}</td></tr>
+                    <tr><td>Fraud Probability</td><td>{fraud_display}</td></tr>
                 </table>
 
                 {"<div class='notes'><strong>Assessor Notes:</strong> " + notes + "</div>" if notes else ""}
