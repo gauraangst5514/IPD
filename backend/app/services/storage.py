@@ -13,6 +13,7 @@ from pathlib import Path
 
 import boto3
 from botocore.exceptions import ClientError
+from botocore.config import Config
 
 from app.core.config import get_settings
 
@@ -20,12 +21,16 @@ settings = get_settings()
 
 
 class StorageService:
-    """S3-compatible object storage for claim images. Falls back to local disk."""
+    """Explicit local or S3 storage; never silently switch data stores."""
 
     def __init__(self):
-        self.use_local = True  # Default to local for dev without MinIO
-        self.local_dir = Path("uploads")
-        self.local_dir.mkdir(exist_ok=True)
+        self.use_local = settings.STORAGE_BACKEND == "local"
+        self.local_dir = Path(settings.UPLOADS_DIR)
+        self.local_dir.mkdir(parents=True, exist_ok=True)
+        self.client = None
+        self.public_client = None
+        if self.use_local:
+            return
 
         try:
             self.client = boto3.client(
@@ -34,12 +39,19 @@ class StorageService:
                 aws_access_key_id=settings.S3_ACCESS_KEY,
                 aws_secret_access_key=settings.S3_SECRET_KEY,
                 region_name="us-east-1",
+                config=Config(connect_timeout=3,read_timeout=5,retries={"max_attempts":0},
+                              s3={"addressing_style":"path"}),
             )
+            self.public_client = self.client
+            if settings.S3_PUBLIC_ENDPOINT:
+                self.public_client=boto3.client("s3",endpoint_url=settings.S3_PUBLIC_ENDPOINT,
+                    aws_access_key_id=settings.S3_ACCESS_KEY,aws_secret_access_key=settings.S3_SECRET_KEY,
+                    region_name="us-east-1",config=Config(s3={"addressing_style":"path"}))
             self.bucket = settings.S3_BUCKET
             self._ensure_bucket()
             self.use_local = False
-        except Exception:
-            print("⚠️  MinIO/S3 not available — using local file storage")
+        except Exception as error:
+            raise RuntimeError("Configured S3 storage is unavailable") from error
 
     def _ensure_bucket(self):
         """Create bucket if it doesn't exist."""
@@ -63,8 +75,9 @@ class StorageService:
                 "size_bytes": int,
             }
         """
+        filename = Path(filename or "image.jpg").name
         ext = Path(filename).suffix.lower() or ".jpg"
-        unique_name = f"{uuid.uuid4().hex[:12]}_{filename}"
+        unique_name = f"{uuid.uuid4().hex}{ext}"
         key = f"claims/{claim_id}/{unique_name}"
         file_hash = hashlib.sha256(file_bytes).hexdigest()
 
@@ -104,7 +117,7 @@ class StorageService:
         """Generate a presigned URL for an object."""
         if self.use_local:
             return f"/uploads/{key}"
-        return self.client.generate_presigned_url(
+        return self.public_client.generate_presigned_url(
             "get_object",
             Params={"Bucket": self.bucket, "Key": key},
             ExpiresIn=expires_in,
@@ -120,7 +133,10 @@ class StorageService:
 
     def delete_image(self, key: str):
         """Delete an image from storage."""
-        self.client.delete_object(Bucket=self.bucket, Key=key)
+        if self.use_local:
+            (self.local_dir / key).unlink(missing_ok=True)
+        else:
+            self.client.delete_object(Bucket=self.bucket, Key=key)
 
 
 # Singleton
@@ -130,5 +146,9 @@ _storage_service = None
 def get_storage_service() -> StorageService:
     global _storage_service
     if _storage_service is None:
-        _storage_service = StorageService()
+        if settings.STORAGE_BACKEND == 'blob':
+            from app.services.blob_storage import BlobStorageService
+            _storage_service = BlobStorageService()
+        else:
+            _storage_service = StorageService()
     return _storage_service

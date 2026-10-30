@@ -1,0 +1,1066 @@
+{
+  "scope": "8 deterministic test queries; top3 candidates each; exploratory diagnostic, not reranking validation",
+  "matcher": "SIFT_RANSAC",
+  "elapsed_seconds": 26.55873262499881,
+  "pairs": [
+    {
+      "query": "0_0.jpg",
+      "candidate": "0_2.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.9012711048126221,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.2012,
+            "bbox": [
+              104.488,
+              157.8951,
+              276.76,
+              288.2259
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.5886,
+            "bbox": [
+              103.52999999999999,
+              162.43380000000002,
+              263.6088,
+              290.6244
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 39,
+        "damage_supported_correspondences": 19,
+        "damage_supported_fraction": 0.48717948717948717,
+        "damage_mask_score_drop": 0.08303660154342651,
+        "background_mask_score_drop": 0.0109710693359375,
+        "damage_minus_background_drop": 0.07206553220748901,
+        "background_control_available": true,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "0_0.jpg",
+      "candidate": "0_4.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8781970143318176,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.2012,
+            "bbox": [
+              104.488,
+              157.8951,
+              276.76,
+              288.2259
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.7835,
+            "bbox": [
+              98.53200000000001,
+              184.99814999999998,
+              254.8728,
+              296.62064999999996
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 49,
+        "damage_supported_correspondences": 18,
+        "damage_supported_fraction": 0.3673469387755102,
+        "damage_mask_score_drop": 0.05720245838165283,
+        "background_mask_score_drop": 0.006256043910980225,
+        "damage_minus_background_drop": 0.05094641447067261,
+        "background_control_available": true,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "0_0.jpg",
+      "candidate": "0_3.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8619635105133057,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.2012,
+            "bbox": [
+              104.488,
+              157.8951,
+              276.76,
+              288.2259
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "crack",
+            "confidence": 0.5491,
+            "bbox": [
+              321.9902,
+              77.72984999999998,
+              400.48260000000005,
+              197.24894999999998
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "crack",
+            "confidence": 0.2056,
+            "bbox": [
+              189.5194,
+              74.03985,
+              420.9982,
+              295.69815
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 8,
+        "damage_supported_correspondences": 0,
+        "damage_supported_fraction": 0.0,
+        "damage_mask_score_drop": 0.0917125940322876,
+        "background_mask_score_drop": 0.0167730450630188,
+        "damage_minus_background_drop": 0.0749395489692688,
+        "background_control_available": true,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "12_36.jpg",
+      "candidate": "12_34.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.9092743396759033,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.2264,
+            "bbox": [
+              451.332,
+              460.05120000000005,
+              555.6600000000001,
+              744.7104
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": []
+      }
+    },
+    {
+      "query": "12_36.jpg",
+      "candidate": "12_32.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.9076377153396606,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.2264,
+            "bbox": [
+              451.332,
+              460.05120000000005,
+              555.6600000000001,
+              744.7104
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "crack",
+            "confidence": 0.3142,
+            "bbox": [
+              1534.3775999999998,
+              1921.6511999999998,
+              1776.2976,
+              2121.6384
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 100,
+        "damage_supported_correspondences": 0,
+        "damage_supported_fraction": 0.0,
+        "damage_mask_score_drop": -0.0006270408630371094,
+        "background_mask_score_drop": 0.0,
+        "damage_minus_background_drop": -0.0006270408630371094,
+        "background_control_available": true,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "12_36.jpg",
+      "candidate": "12_35.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.9043663144111633,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.2264,
+            "bbox": [
+              451.332,
+              460.05120000000005,
+              555.6600000000001,
+              744.7104
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.2046,
+            "bbox": [
+              0.0,
+              14.716800000000003,
+              361.0656,
+              987.6384
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 100,
+        "damage_supported_correspondences": 0,
+        "damage_supported_fraction": 0.0,
+        "damage_mask_score_drop": 0.0009396076202392578,
+        "background_mask_score_drop": 0.0,
+        "damage_minus_background_drop": 0.0009396076202392578,
+        "background_control_available": true,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "17_2.jpg",
+      "candidate": "17_1.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.9465160369873047,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.55,
+            "bbox": [
+              122.60999999999999,
+              60.848099999999974,
+              365.3412,
+              365.0517
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.4706,
+            "bbox": [
+              120.96479999999998,
+              39.64905000000002,
+              338.04720000000003,
+              361.89675
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 14,
+        "damage_supported_correspondences": 10,
+        "damage_supported_fraction": 0.7142857142857143,
+        "damage_mask_score_drop": 0.12341070175170898,
+        "background_mask_score_drop": null,
+        "damage_minus_background_drop": null,
+        "background_control_available": false,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "17_2.jpg",
+      "candidate": "17_6.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.9414615035057068,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.55,
+            "bbox": [
+              122.60999999999999,
+              60.848099999999974,
+              365.3412,
+              365.0517
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.4779,
+            "bbox": [
+              140.38359999999997,
+              73.74465,
+              311.682,
+              310.45815
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 22,
+        "damage_supported_correspondences": 11,
+        "damage_supported_fraction": 0.5,
+        "damage_mask_score_drop": 0.12092024087905884,
+        "background_mask_score_drop": null,
+        "damage_minus_background_drop": null,
+        "background_control_available": false,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "17_2.jpg",
+      "candidate": "17_21.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.918439507484436,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.55,
+            "bbox": [
+              122.60999999999999,
+              60.848099999999974,
+              365.3412,
+              365.0517
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.5936,
+            "bbox": [
+              94.15499999999999,
+              37.45349999999999,
+              279.22499999999997,
+              152.8029
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "scratch",
+            "confidence": 0.3221,
+            "bbox": [
+              0.0,
+              15.590249999999983,
+              291.54,
+              308.17035000000004
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 14,
+        "damage_supported_correspondences": 7,
+        "damage_supported_fraction": 0.5,
+        "damage_mask_score_drop": 0.1238945722579956,
+        "background_mask_score_drop": null,
+        "damage_minus_background_drop": null,
+        "background_control_available": false,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "23_0.jpg",
+      "candidate": "3_1.jpg",
+      "same_filename_identity": false,
+      "cosine": 0.7902278900146484,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.7856,
+            "bbox": [
+              50.93919999999998,
+              0.0,
+              480.4752,
+              148.0
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": []
+      }
+    },
+    {
+      "query": "23_0.jpg",
+      "candidate": "3_2.jpg",
+      "same_filename_identity": false,
+      "cosine": 0.7861781120300293,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.7856,
+            "bbox": [
+              50.93919999999998,
+              0.0,
+              480.4752,
+              148.0
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": []
+      }
+    },
+    {
+      "query": "23_0.jpg",
+      "candidate": "24_8.jpg",
+      "same_filename_identity": false,
+      "cosine": 0.7473509311676025,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.7856,
+            "bbox": [
+              50.93919999999998,
+              0.0,
+              480.4752,
+              148.0
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.3552,
+            "bbox": [
+              128.68720000000002,
+              27.302000000000003,
+              294.1032,
+              67.4696
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.297,
+            "bbox": [
+              325.6736,
+              55.04345,
+              496.0,
+              184.65315
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "scratch",
+            "confidence": 0.2609,
+            "bbox": [
+              0.9672000000000036,
+              0.00934999999999897,
+              297.9224,
+              89.26445
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 0,
+        "damage_supported_correspondences": 0,
+        "damage_supported_fraction": null,
+        "damage_mask_score_drop": 0.43629199266433716,
+        "background_mask_score_drop": null,
+        "damage_minus_background_drop": null,
+        "background_control_available": false,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "28_17.jpg",
+      "candidate": "28_15.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8814141154289246,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.7,
+            "bbox": [
+              0.0,
+              58.958400000000005,
+              136.6976,
+              209.47840000000002
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.4832,
+            "bbox": [
+              328.9224,
+              2.2294000000000067,
+              496.0247999999999,
+              244.169
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "scratch",
+            "confidence": 0.3383,
+            "bbox": [
+              265.01279999999997,
+              267.9398,
+              355.48319999999995,
+              282.8498
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.2489,
+            "bbox": [
+              108.252,
+              1.3631999999999918,
+              487.74159999999995,
+              213.73839999999998
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": []
+      }
+    },
+    {
+      "query": "28_17.jpg",
+      "candidate": "28_12.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8763436675071716,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.7,
+            "bbox": [
+              0.0,
+              58.958400000000005,
+              136.6976,
+              209.47840000000002
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.4832,
+            "bbox": [
+              328.9224,
+              2.2294000000000067,
+              496.0247999999999,
+              244.169
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "scratch",
+            "confidence": 0.3383,
+            "bbox": [
+              265.01279999999997,
+              267.9398,
+              355.48319999999995,
+              282.8498
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.2489,
+            "bbox": [
+              108.252,
+              1.3631999999999918,
+              487.74159999999995,
+              213.73839999999998
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.353,
+            "bbox": [
+              1.6482499999999918,
+              110.51549999999999,
+              327.30775,
+              319.0005
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 20,
+        "damage_supported_correspondences": 20,
+        "damage_supported_fraction": 1.0,
+        "damage_mask_score_drop": 0.009460687637329102,
+        "background_mask_score_drop": null,
+        "damage_minus_background_drop": null,
+        "background_control_available": false,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "28_17.jpg",
+      "candidate": "28_4.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8598380088806152,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.7,
+            "bbox": [
+              0.0,
+              58.958400000000005,
+              136.6976,
+              209.47840000000002
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.4832,
+            "bbox": [
+              328.9224,
+              2.2294000000000067,
+              496.0247999999999,
+              244.169
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "scratch",
+            "confidence": 0.3383,
+            "bbox": [
+              265.01279999999997,
+              267.9398,
+              355.48319999999995,
+              282.8498
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.2489,
+            "bbox": [
+              108.252,
+              1.3631999999999918,
+              487.74159999999995,
+              213.73839999999998
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "crack",
+            "confidence": 0.6926,
+            "bbox": [
+              290.2096,
+              292.9225,
+              362.32800000000003,
+              323.92749999999995
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "crack",
+            "confidence": 0.4762,
+            "bbox": [
+              141.2112,
+              56.9725,
+              212.8336,
+              79.7225
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.4581,
+            "bbox": [
+              318.7544,
+              39.56875000000001,
+              495.6776,
+              299.60125
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.2323,
+            "bbox": [
+              68.34879999999998,
+              61.76625000000001,
+              171.5168,
+              201.80875
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 16,
+        "damage_supported_correspondences": 11,
+        "damage_supported_fraction": 0.6875,
+        "damage_mask_score_drop": -0.01970040798187256,
+        "background_mask_score_drop": null,
+        "damage_minus_background_drop": null,
+        "background_control_available": false,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "31_0.jpg",
+      "candidate": "31_1.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8572375774383545,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.4411,
+            "bbox": [
+              49.041299999999985,
+              3.247200000000011,
+              241.98789999999997,
+              330.624
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": []
+      }
+    },
+    {
+      "query": "31_0.jpg",
+      "candidate": "31_6.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8300259709358215,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.4411,
+            "bbox": [
+              49.041299999999985,
+              3.247200000000011,
+              241.98789999999997,
+              330.624
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": []
+      }
+    },
+    {
+      "query": "31_0.jpg",
+      "candidate": "31_3.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8292215466499329,
+      "evidence": {
+        "available": true,
+        "query_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.4411,
+            "bbox": [
+              49.041299999999985,
+              3.247200000000011,
+              241.98789999999997,
+              330.624
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "candidate_detections": [
+          {
+            "label": "scratch",
+            "confidence": 0.3685,
+            "bbox": [
+              46.457600000000006,
+              33.76350000000001,
+              224.0,
+              330.7347
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ],
+        "evaluated_correspondences": 36,
+        "damage_supported_correspondences": 36,
+        "damage_supported_fraction": 1.0,
+        "damage_mask_score_drop": 0.2569239139556885,
+        "background_mask_score_drop": null,
+        "damage_minus_background_drop": null,
+        "background_control_available": false,
+        "mask_fill": "query_mean_RGB",
+        "mask_direction": "query_only",
+        "warning": "Detector boxes are predictions. Masking introduces artifacts; score changes are model sensitivity, not causal proof. Correspondences capped at 100."
+      }
+    },
+    {
+      "query": "36_12.jpg",
+      "candidate": "36_11.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.9443289041519165,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.7148,
+            "bbox": [
+              287.03675000000004,
+              150.45974999999999,
+              402.17705,
+              231.45524999999998
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.4273,
+            "bbox": [
+              199.5521,
+              202.65479999999997,
+              261.6603,
+              238.8168
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ]
+      }
+    },
+    {
+      "query": "36_12.jpg",
+      "candidate": "36_0.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.8821942210197449,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.336,
+            "bbox": [
+              245.3978,
+              271.95300000000003,
+              332.01660000000004,
+              369.0
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ]
+      }
+    },
+    {
+      "query": "36_12.jpg",
+      "candidate": "36_10.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.878835141658783,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.5684,
+            "bbox": [
+              257.052,
+              146.8365,
+              328.1288,
+              196.1583
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "scratch",
+            "confidence": 0.4379,
+            "bbox": [
+              26.635199999999998,
+              255.67200000000003,
+              122.1648,
+              285.882
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ]
+      }
+    },
+    {
+      "query": "4_6.jpg",
+      "candidate": "4_7.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.899955153465271,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [],
+        "candidate_detections": [
+          {
+            "label": "crack",
+            "confidence": 0.4824,
+            "bbox": [
+              217.6392,
+              210.5883,
+              359.3336,
+              273.46590000000003
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "dent",
+            "confidence": 0.2071,
+            "bbox": [
+              213.86320000000003,
+              110.09115,
+              471.8584,
+              274.55445
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ]
+      }
+    },
+    {
+      "query": "4_6.jpg",
+      "candidate": "4_15.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.7964370250701904,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [],
+        "candidate_detections": [
+          {
+            "label": "dent",
+            "confidence": 0.6773,
+            "bbox": [
+              736.7976,
+              712.2528,
+              1592.892,
+              1270.6848000000002
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "glass_shatter",
+            "confidence": 0.2221,
+            "bbox": [
+              0.0,
+              2246.0256000000004,
+              2348.4384,
+              4026.1536
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ]
+      }
+    },
+    {
+      "query": "4_6.jpg",
+      "candidate": "4_5.jpg",
+      "same_filename_identity": true,
+      "cosine": 0.7912119030952454,
+      "evidence": {
+        "available": false,
+        "reason": "no_damage_detected_in_one_or_both_images",
+        "query_detections": [],
+        "candidate_detections": [
+          {
+            "label": "glass_shatter",
+            "confidence": 0.5316,
+            "bbox": [
+              0.0,
+              2221.0272,
+              2880.0576,
+              4031.7984
+            ],
+            "bbox_format": "pixel_xyxy"
+          },
+          {
+            "label": "scratch",
+            "confidence": 0.2651,
+            "bbox": [
+              1915.4016000000001,
+              1301.1263999999999,
+              2082.3264,
+              1478.5344
+            ],
+            "bbox_format": "pixel_xyxy"
+          }
+        ]
+      }
+    }
+  ]
+}

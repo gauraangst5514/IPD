@@ -8,6 +8,8 @@ This is the primary inference entry point used by the ML service.
 """
 
 import io
+import os
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -35,8 +37,10 @@ class DamageDetector:
     """YOLOv8-based damage detector with severity estimation."""
 
     def __init__(self, weights_path: str = DEFAULT_WEIGHTS, device: str = "auto", conf: float = 0.20, iou: float = 0.5):
-        from ultralytics import YOLO
-
+        self.model = None
+        self.trained = False
+        self.unavailable_reason = "checkpoint_missing"
+        self.checkpoint_name = None
         self.conf = conf
         self.iou = iou
         self.severity_estimator = SeverityEstimator()
@@ -54,20 +58,36 @@ class DamageDetector:
                 device = "cpu"
         self.device = device
 
-        # Load model — try v2 first, then v1 fallback, then base pretrained
-        if Path(weights_path).exists():
-            self.model = YOLO(weights_path)
-            self.trained = True
-            print(f"✅ Loaded fine-tuned CarDD model: {weights_path}")
-        elif Path(FALLBACK_WEIGHTS).exists():
-            self.model = YOLO(FALLBACK_WEIGHTS)
-            self.trained = True
-            print(f"✅ Loaded fallback CarDD model: {FALLBACK_WEIGHTS}")
-        else:
-            self.model = YOLO("yolov8m.pt")
-            self.trained = False
-            print(f"⚠️  No fine-tuned weights found. Using base YOLOv8m "
-                  f"(will not detect car damage correctly until trained).")
+        # Missing damage weights must never trigger a download of a generic
+        # object detector whose class IDs would be misread as damage labels.
+        root = Path(__file__).resolve().parents[2]
+        configured = os.environ.get("DAMAGE_MODEL_PATH")
+        candidates = [configured] if configured else [weights_path, FALLBACK_WEIGHTS]
+        for candidate in candidates:
+            path = Path(candidate).expanduser()
+            path = path if path.is_absolute() else root / path
+            if not path.is_file():
+                continue
+            try:
+                from ultralytics import YOLO
+                model = YOLO(str(path))
+                names = model.names
+                names = list(names.values()) if isinstance(names, dict) else list(names)
+                normalized = [str(name).lower().replace(" ", "_") for name in names]
+                if normalized != list(CLASS_NAMES.values()):
+                    raise ValueError("Checkpoint classes do not match the six supported damage classes")
+                self.model = model
+                self.trained = True
+                self.unavailable_reason = None
+                self.checkpoint_name = path.name
+            except Exception:
+                self.unavailable_reason = "checkpoint_load_failed"
+                logging.getLogger(__name__).exception("Could not load damage checkpoint")
+            break
+
+    def status(self):
+        return {"available": self.trained, "reason": self.unavailable_reason,
+                "checkpoint": self.checkpoint_name, "classes": list(CLASS_NAMES.values())}
 
     def detect(self, image_bytes: bytes) -> dict:
         """
@@ -83,9 +103,18 @@ class DamageDetector:
         - annotated_image: bytes (PNG with boxes drawn)
         """
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        if not self.trained:
+            buffer = io.BytesIO()
+            image.save(buffer, format="PNG")
+            return {
+                "damage_analysis_available": False, "damage_detected": None,
+                "num_instances": 0, "detections": [], "severity": None,
+                "severity_score": None, "severity_reasoning": {"reason": self.unavailable_reason},
+                "primary_damage_type": None, "annotated_image": buffer.getvalue(),
+            }
         img_array = np.array(image)
 
-        # Run inference at multiple scales for better detection on varied images
+        # Preserve raw model confidence rather than manually boosting it
         # Use larger imgsz for better accuracy on detail
         results = self.model.predict(
             source=img_array,
@@ -93,48 +122,19 @@ class DamageDetector:
             iou=self.iou,
             device=self.device,
             imgsz=800,        # Higher resolution inference
-            augment=False,    # Disabled — we handle multi-scale manually below
-            verbose=False,
-        )
-
-        # Also run at a second scale for small/large damage coverage
-        results_large = self.model.predict(
-            source=img_array,
-            conf=self.conf,
-            iou=self.iou,
-            device=self.device,
-            imgsz=1024,       # Even larger for fine detail
             augment=False,
             verbose=False,
         )
 
-        # Merge detections: keep the higher confidence prediction for overlapping boxes
         result = results[0]
-        result_large = results_large[0]
-
-        # Combine boxes — use the primary result for visualization
-        # but boost confidence with confirmations from the large-scale run
-        confirmed_indices = set()
-        if len(result.boxes) > 0 and len(result_large.boxes) > 0:
-            for i, box in enumerate(result.boxes):
-                box_xyxy = box.xyxy[0].tolist()
-                for box2 in result_large.boxes:
-                    box2_xyxy = box2.xyxy[0].tolist()
-                    if self._iou(box_xyxy, box2_xyxy) > 0.3:
-                        confirmed_indices.add(i)
-                        break
 
         # Parse detections
         instances: list[DamageInstance] = []
         detections_out = []
 
-        for i, box in enumerate(result.boxes):
+        for box in result.boxes:
             cls_idx = int(box.cls[0].item())
             confidence = float(box.conf[0].item())
-
-            # Boost confidence for detections confirmed at multiple scales
-            if i in confirmed_indices:
-                confidence = min(0.99, confidence * 1.2)  # 20% boost, capped at 0.99
 
             # YOLO gives xywhn (normalized center format)
             xywhn = box.xywhn[0].tolist()  # [x_center, y_center, w, h]
@@ -154,17 +154,18 @@ class DamageDetector:
         severity_result = self.severity_estimator.estimate(instances)
         primary_type = self.severity_estimator.primary_damage_type(instances)
 
-        # Generate annotated image with boosted confidence labels
+        # Generate annotated image with raw model confidence
         annotated_bytes = self._annotate_with_detections(image, detections_out)
 
         return {
+            "damage_analysis_available": True,
             "damage_detected": len(instances) > 0,
             "num_instances": len(instances),
             "detections": detections_out,
-            "severity": severity_result.severity,
-            "severity_score": severity_result.score,
+            "severity": severity_result.severity if instances else None,
+            "severity_score": severity_result.score if instances else None,
             "severity_reasoning": severity_result.reasoning,
-            "primary_damage_type": primary_type,
+            "primary_damage_type": primary_type if instances else None,
             "annotated_image": annotated_bytes,
         }
 

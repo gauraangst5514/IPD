@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-30",
+  "automated_tests_passed": 72,
+  "frontend_build_passed": true,
+  "reports": [
+    "fixed_gallery_abstention_evaluation.json",
+    "external_stress_evaluation.json",
+    "full_stack_verification.json",
+    "postgres_persistence_verification.json",
+    "blob_storage_verification.json"
+  ],
+  "models": {
+    "vehicle_make": {
+      "repository": "nenzilea/car-classification",
+      "revision": "40b07a61c3125b0be2e607efe6581d4e64c8b801",
+      "supported_makes": 9,
+      "smoke_inference": true
+    },
+    "plate_reader": {
+      "method": "EasyOCR CRAFT + English g2",
+      "positive_synthetic_plate": "MH02AB1234",
+      "runtime_downloads": false
+    },
+    "tamper_detection": {
+      "method": "TruFor",
+      "strict_tensor_state_load": true,
+      "real_photo_model_score": 0.13129445910453796,
+      "insurance_accuracy_validated": false
+    },
+    "historical_matching": {
+      "method": "OSNet candidate retrieval",
+      "physical_identity_proven": false
+    }
+  },
+  "browser_evidence": [
+    "research/results/photo_inspection_verified.png",
+    "research/results/enabled_checks_verified.png"
+  ],
+  "narrated_walkthrough": {
+    "file": "submission/IntelliClaim_Narrated_Walkthrough.mp4",
+    "seconds": 102.5590476190476,
+    "scenes": 7,
+    "method": "Actual browser screenshots with synthesized macOS Aman narration; edited still-screen walkthrough",
+    "continuous_screen_recording": false,
+    "voice_cloning": false
+  },
+  "deployment": {
+    "team": "gst8",
+    "project": "intelliclaim",
+    "deployment_id": "dpl_AsBwuxtHyTczjN9EkruqBw5KwAzx",
+    "url": "https://intelliclaim-jl3a0zow6-gst8.vercel.app",
+    "build_state": "READY",
+    "integration_state": "failed_verification",
+    "public_release_verified": false,
+    "promoted_by_this_work": false,
+    "observed_failures": [
+      "Capability response lacked damage_detection; hosted ML availability was not established",
+      "Synthetic hosted claim request timed out"
+    ],
+    "root_cause": "Not established; inspect private service binding/routing and ML startup/resource/health timeout logs",
+    "work_handoff": "User requested documentation and publication before further deployment repair"
+  },
+  "remaining_external_requirements": [
+    "Author-issued CarDD/CDDM data access",
+    "Independent same-damage identity and training-overlap audit",
+    "Reliable abstention at a useful coverage",
+    "Full production inference load and security audit"
+  ],
+  "publication": {
+    "repository": "gauraangst5514/IPD",
+    "branch": "codex/intelliclaim-documented-release",
+    "isolated_checkout_tests_passed": 72,
+    "isolated_checkout_frontend_build_passed": true,
+    "raw_corpora_and_credentials_excluded": true,
+    "known_private_value_audit_passed": true,
+    "component_guide": "docs/COMPONENT_GUIDE.md",
+    "status": "prepared_for_push"
+  }
+}

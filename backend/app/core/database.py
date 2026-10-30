@@ -10,8 +10,20 @@ connect_args = {}
 if "sqlite" in settings.DATABASE_URL:
     connect_args = {"check_same_thread": False}
 
+database_url = settings.DATABASE_URL
+if database_url.startswith(('postgres://','postgresql://')):
+    import ssl
+    from sqlalchemy.engine import make_url
+    url=make_url(database_url).set(drivername='postgresql+asyncpg')
+    query=dict(url.query)
+    if query.pop('sslmode',None) in {'require','verify-full','verify-ca'}:
+        connect_args['ssl']=ssl.create_default_context()
+    query.pop('channel_binding',None)
+    database_url=url.set(query=query)
+    connect_args['statement_cache_size']=0
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    database_url,
     echo=settings.DEBUG,
     connect_args=connect_args,
 )

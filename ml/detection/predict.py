@@ -46,10 +46,10 @@ def predict(
         vehicle_make=vehicle_make,
         vehicle_year=vehicle_year,
         region=region,
-    )
+    ) if result["damage_detected"] and result["severity"] else None
 
     # Fraud
-    fraud = forensics.full_analysis(image_bytes, claim_id="test")
+    fraud = forensics.full_analysis(image_bytes)
 
     # Output
     print(f"\n{'='*60}")
@@ -65,26 +65,31 @@ def predict(
     else:
         print("    (none detected)")
 
-    print(f"\n  📊 Severity: {result['severity'].upper()} (score: {result['severity_score']})")
+    print(f"\n  📊 Estimated severity: {(result['severity'] or 'not assessed').upper()}")
     r = result["severity_reasoning"]
     if "total_area_coverage" in r:
         print(f"    Area coverage: {r['total_area_coverage']*100:.1f}%")
         print(f"    Largest damage: {r['largest_damage_area']*100:.1f}%")
         print(f"    Most severe type: {r['most_severe_type']}")
 
-    print(f"\n  💰 Cost Estimate: ₹{cost.min_cost:,.0f} – ₹{cost.max_cost:,.0f}")
-    print(f"    Parts ₹{cost.breakdown['parts']:,.0f} | "
-          f"Labour ₹{cost.breakdown['labour']:,.0f} | "
-          f"Paint ₹{cost.breakdown['paint']:,.0f}")
+    if cost:
+        print(f"\n  Indicative cost band: ₹{cost.min_cost:,.0f} – ₹{cost.max_cost:,.0f}")
+        print(f"    Parts ₹{cost.breakdown['parts']:,.0f} | "
+              f"Labour ₹{cost.breakdown['labour']:,.0f} | "
+              f"Paint ₹{cost.breakdown['paint']:,.0f}")
+    else:
+        print("\n  Repair cost: not estimated")
 
-    print(f"\n  🕵️  Fraud Score: {fraud['overall_manipulation_score']*100:.1f}%")
+    print("\n  Evidence indicators (fraud probability not estimated):")
+    for item in fraud["fraud_indicators"]:
+        print(f"    {item['code']}: {item['status']} — {item['detail']}")
     if fraud["metadata_flags"]:
         print(f"    Flags: {', '.join(fraud['metadata_flags'])}")
 
     print(f"\n{'='*60}")
 
     # Save annotated image
-    if save_annotated:
+    if save_annotated and result.get("damage_analysis_available", False):
         with open(save_annotated, "wb") as f:
             f.write(result["annotated_image"])
         print(f"  💾 Annotated image saved to: {save_annotated}")

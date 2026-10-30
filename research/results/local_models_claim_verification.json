@@ -1,0 +1,143 @@
+{
+  "scope": "Real isolated Docker services over HTTP; synthetic claims only",
+  "passed": true,
+  "claims": [
+    "59d7859d-8b58-44cf-893c-2bf2dc747b01",
+    "2b5869c1-4b7b-49a7-b369-0ee9d8e120d2"
+  ],
+  "damage_type": "scratch",
+  "persistent_reuse": true,
+  "pdf": true,
+  "graph_backend": "sql",
+  "infrastructure": {
+    "status": "healthy",
+    "services": {
+      "database": {
+        "status": "healthy",
+        "backend": "sqlite"
+      },
+      "storage": {
+        "status": "healthy",
+        "backend": "local"
+      },
+      "redis": {
+        "status": "not_configured",
+        "mode": "inline"
+      },
+      "workers": {
+        "status": "not_configured"
+      },
+      "graph": {
+        "status": "not_configured",
+        "backend": "sql",
+        "pending_projections": 0
+      },
+      "ml": {
+        "status": "healthy",
+        "service": "intelliclaim-ml",
+        "version": "0.3.0",
+        "model_trained": true,
+        "components": {
+          "damage_detection": {
+            "available": true,
+            "reason": null,
+            "checkpoint": "best.pt",
+            "classes": [
+              "dent",
+              "scratch",
+              "crack",
+              "glass_shatter",
+              "lamp_broken",
+              "tire_flat"
+            ]
+          },
+          "image_reuse": {
+            "available": true,
+            "method": "sha256_phash_dhash"
+          },
+          "text_consistency": {
+            "available": true,
+            "method": "keyword_baseline"
+          },
+          "vehicle_make": {
+            "available": true,
+            "method": "pretrained_vit_vehicle_make",
+            "reason": null,
+            "supported_makes": [
+              "BMW",
+              "Dodge",
+              "Ferrari",
+              "Ford",
+              "Jeep",
+              "Lamborghini",
+              "Porsche",
+              "Rolls-Royce",
+              "Toyota"
+            ],
+            "limitation": "Pretrained visual make suggestion; confidence is uncalibrated. Close-up damage photos and unsupported makes may be inconclusive."
+          },
+          "tamper_detection": {
+            "available": true,
+            "method": "TruFor_pretrained",
+            "reason": null,
+            "license": "Informational and nonprofit use only",
+            "limitation": "Published pretrained forgery localization model; no vehicle-insurance accuracy or calibrated authenticity probability established."
+          },
+          "damage_reidentification": {
+            "available": true,
+            "method": "OSNet_historical_candidates",
+            "limitation": "Retrieves visually related photographs; physical-damage identity requires human review."
+          },
+          "saliency": {
+            "available": true,
+            "method": "occlusion_sensitivity"
+          },
+          "fraud_probability": {
+            "available": false,
+            "reason": "no_validated_calibrated_claim_probability"
+          },
+          "tabular_classifier": {
+            "available": true,
+            "method": "l2_logistic_regression",
+            "metrics": {
+              "n": 201,
+              "prevalence": 0.24875621890547264,
+              "pr_auc_average_precision": 0.669463882854899,
+              "roc_auc": 0.8785430463576159,
+              "brier_score": 0.12003474281806967,
+              "precision": 0.6470588235294118,
+              "recall": 0.88,
+              "confusion": {
+                "tp": 44,
+                "fp": 24,
+                "tn": 127,
+                "fn": 6
+              },
+              "threshold": 0.26364936487739005,
+              "precision_at_20": 0.65
+            },
+            "research_only": true,
+            "warning": "Public benchmark; calibration and insurer transfer are unverified."
+          },
+          "graph_baseline": {
+            "available": true,
+            "method": "inductive_graphsage_feature_neighbors",
+            "research_only": true,
+            "edge_meaning": "Similar benchmark feature vectors; not a fraud-ring graph"
+          },
+          "plate_reader": {
+            "available": true,
+            "method": "easyocr_offline",
+            "reason": null,
+            "limitation": "English OCR and Indian registration patterns; no readable plate is inconclusive."
+          }
+        }
+      }
+    },
+    "mode": {
+      "processing": "inline",
+      "graph": "sql",
+      "storage": "local"
+    }
+  }
+}

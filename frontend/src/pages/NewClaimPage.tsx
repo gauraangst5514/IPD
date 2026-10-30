@@ -23,6 +23,12 @@ export default function NewClaimPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [claimId, setClaimId] = useState("");
+  const [includeStructured, setIncludeStructured] = useState(false);
+  const [invoiceText, setInvoiceText] = useState("");
+  const [structured, setStructured] = useState<Record<string,string>>({
+    incident_severity:"Minor Damage",incident_type:"Single Vehicle Collision",insured_hobbies:"",
+    total_claim_amount:"",vehicle_claim:"",umbrella_limit:"",policy_annual_premium:"",
+  });
 
   // New vehicle form (shown when adding a new vehicle)
   const [showNewVehicle, setShowNewVehicle] = useState(false);
@@ -70,12 +76,21 @@ export default function NewClaimPage() {
 
   const handleCreateClaim = async () => {
     setError("");
+    const numeric=["total_claim_amount","vehicle_claim","umbrella_limit","policy_annual_premium"];
+    if(includeStructured && (Object.values(structured).some(v=>!v.trim()) ||
+      numeric.some(key=>!Number.isFinite(Number(structured[key]))))) {
+      setError("Complete all structured fields or turn off the optional research assessment.");
+      return;
+    }
     try {
       const res = await api.post("/claims", {
         vehicle_id: vehicleId,
         description,
         incident_date: incidentDate || undefined,
         incident_location: incidentLocation || undefined,
+        structured_fields: includeStructured ? Object.fromEntries(Object.entries(structured)
+          .map(([key,value])=>[key,numeric.includes(key)?Number(value):value])) : undefined,
+        invoice_text: invoiceText.trim() || undefined,
       });
       setClaimId(res.data.id);
       setStep(3);
@@ -264,6 +279,31 @@ export default function NewClaimPage() {
               />
             </div>
           </div>
+          <label className="block text-sm font-medium">
+            Invoice text (optional)
+            <textarea className="input mt-1" rows={3} maxLength={50000} value={invoiceText}
+              onChange={e=>setInvoiceText(e.target.value)}
+              placeholder={"Repair | 2 | 1500\nInvoice total: 3000"}/>
+          </label>
+          <label className="flex items-center gap-2 text-sm font-medium">
+            <input type="checkbox" checked={includeStructured} onChange={e=>setIncludeStructured(e.target.checked)}/>
+            Include structured public-data research assessment
+          </label>
+          {includeStructured && <div className="space-y-3 border rounded-lg p-4">
+            <p className="text-xs text-slate-500">These models use public benchmark fields and units. They are separate from the INR repair estimate and are not validated insurer fraud probabilities.</p>
+            <div className="grid grid-cols-2 gap-3">
+              {Object.entries(structured).map(([key,value])=><label key={key} className="text-sm capitalize">
+                {key.replace(/_/g," ")}
+                {key==="incident_severity" || key==="incident_type" ?
+                  <select className="input mt-1" value={value} onChange={e=>setStructured({...structured,[key]:e.target.value})}>
+                    {(key==="incident_severity"?["Minor Damage","Major Damage","Total Loss","Trivial Damage"]:
+                      ["Single Vehicle Collision","Multi-vehicle Collision","Vehicle Theft","Parked Car"]).map(option=><option key={option}>{option}</option>)}
+                  </select> :
+                  <input className="input mt-1" value={value} type={key==="insured_hobbies"?"text":"number"} step="any"
+                    onChange={e=>setStructured({...structured,[key]:e.target.value})}/>}
+              </label>)}
+            </div>
+          </div>}
           <button
             onClick={handleCreateClaim}
             className="w-full py-2 btn-primary"

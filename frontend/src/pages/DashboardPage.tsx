@@ -3,6 +3,8 @@ import { useAuthStore } from "../store/auth";
 import { Link } from "react-router-dom";
 import { FileText, AlertTriangle, CheckCircle, Clock, XCircle, Shield, TrendingUp, ArrowRight } from "lucide-react";
 import api from "../lib/api";
+import ComponentStatus from "../components/ComponentStatus";
+import InfrastructureStatus from "../components/InfrastructureStatus";
 
 interface RecentClaim {
   id: string;
@@ -41,6 +43,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {(role==="admin" || role==="assessor") && <InfrastructureStatus/>}
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         {statCards.map((stat) => {
@@ -61,15 +64,17 @@ export default function DashboardPage() {
         })}
       </div>
 
+      <ComponentStatus />
+
       {/* Assessor/Admin extra stats */}
-      {(role === "assessor" || role === "admin") && stats?.avg_fraud_score !== undefined && (
+      {(role === "assessor" || role === "admin") && stats !== undefined && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
           <div className="card p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-500">Avg Fraud Risk</p>
+                <p className="text-sm font-medium text-slate-500">Claims with review indicators</p>
                 <p className="text-2xl font-bold text-slate-900 mt-1">
-                  {((stats.avg_fraud_score || 0) * 100).toFixed(1)}%
+                  {stats.flagged ?? 0}
                 </p>
               </div>
               <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
@@ -128,19 +133,6 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
-                    {claim.fraud_risk_score !== null && (
-                      <span
-                        className={`text-xs font-semibold ${
-                          claim.fraud_risk_score > 0.7
-                            ? "text-red-600"
-                            : claim.fraud_risk_score > 0.3
-                            ? "text-amber-600"
-                            : "text-emerald-600"
-                        }`}
-                      >
-                        {(claim.fraud_risk_score * 100).toFixed(0)}% risk
-                      </span>
-                    )}
                     <span className="text-xs text-slate-400">
                       {claim.created_at
                         ? new Date(claim.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })

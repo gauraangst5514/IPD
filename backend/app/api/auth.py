@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Literal
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +17,7 @@ class RegisterRequest(BaseModel):
     password: str
     full_name: str
     phone: Optional[str] = None
-    role: UserRole = UserRole.CLAIMANT
+    role: Literal["claimant"] = "claimant"
 
 
 class AuthResponse(BaseModel):
@@ -43,7 +43,7 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
         hashed_password=hash_password(request.password),
         full_name=request.full_name,
         phone=request.phone,
-        role=request.role,
+        role=UserRole.CLAIMANT,
     )
     db.add(user)
     await db.flush()

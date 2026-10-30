@@ -1,0 +1,3 @@
+research/results/*.json linguist-generated=true
+ml/vendor/** linguist-vendored=true
+ml/retrieval/osnet*_arch.py linguist-vendored=true

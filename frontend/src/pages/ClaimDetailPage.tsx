@@ -1,3 +1,4 @@
+import ClaimCorrespondences from "../components/ClaimCorrespondences";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../lib/api";
@@ -5,13 +6,22 @@ import { Download } from "lucide-react";
 import ImageCompareSlider from "../components/ImageCompareSlider";
 import FraudTimeline from "../components/FraudTimeline";
 import VehicleDamageMap from "../components/VehicleDamageMap";
+import AssessmentForm from "../components/AssessmentForm";
+import IntelligenceDossier from "../components/IntelligenceDossier";
+import DetectionSaliency from "../components/DetectionSaliency";
+import HistoricalEvidence from "../components/HistoricalEvidence";
+import PhotoEvidenceInspector from "../components/PhotoEvidenceInspector";
+import AddToGalleryButton from "../components/AddToGalleryButton";
+import { useAuthStore } from "../store/auth";
 
 export default function ClaimDetailPage() {
   const { id } = useParams();
+  const role = useAuthStore((state) => state.role);
 
   const { data: claim, isLoading } = useQuery({
     queryKey: ["claim", id],
     queryFn: () => api.get(`/claims/${id}`).then((r) => r.data),
+    refetchInterval: (query) => query.state.data?.status === "processing" ? 1500 : false,
   });
 
   if (isLoading) {
@@ -76,13 +86,13 @@ export default function ClaimDetailPage() {
               <p className="text-lg font-medium capitalize">{claim.damage_type}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Severity</p>
+              <p className="text-sm text-gray-500">Estimated severity</p>
               <p className="text-lg font-medium capitalize">{claim.severity}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Confidence</p>
+              <p className="text-sm text-gray-500">Detection confidence</p>
               <p className="text-lg font-medium">
-                {((claim.confidence_score || 0) * 100).toFixed(1)}%
+                {claim.confidence_score == null ? "Not assessed" : `${(claim.confidence_score * 100).toFixed(1)}%`}
               </p>
             </div>
           </div>
@@ -103,7 +113,8 @@ export default function ClaimDetailPage() {
       {/* Cost Estimate */}
       {claim.estimated_cost_min && (
         <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">💰 Cost Estimate</h2>
+          <h2 className="text-lg font-semibold mb-2">Indicative repair-cost band</h2>
+          <p className="text-sm text-slate-500 mb-4">Rule-based estimate from visible damage and vehicle details; requires workshop assessment.</p>
           <p className="text-3xl font-bold text-gray-900">
             ₹{claim.estimated_cost_min.toLocaleString()} – ₹
             {claim.estimated_cost_max?.toLocaleString()}
@@ -127,14 +138,14 @@ export default function ClaimDetailPage() {
         </div>
       )}
 
-      {/* Fraud Score */}
-      {claim.fraud_risk_score !== null && (
+      {/* Evidence observations */}
+      {claim.processed_at && (
         <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">Fraud Risk Analysis</h2>
+          <h2 className="text-lg font-semibold mb-4">Claim Evidence Review</h2>
           <FraudTimeline
-            fraudScore={claim.fraud_risk_score}
             fraudFlags={claim.fraud_flags || {}}
           />
+          <HistoricalEvidence images={claim.images || []} indicators={claim.fraud_flags?._indicators || []}/>
         </div>
       )}
 
@@ -176,18 +187,26 @@ export default function ClaimDetailPage() {
                       {img.severity || "—"}
                     </span>
                     <span className="text-sm font-medium text-slate-700 capitalize">
-                      {img.damage_type || "Processing"}
+                      {img.damage_type || (claim.processed_at ? "Not assessed" : "Processing")}
                     </span>
                   </div>
-                  <span className="text-sm text-slate-500">
-                    {((img.confidence || 0) * 100).toFixed(0)}% confidence
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-slate-500">
+                      {img.confidence == null ? "Not assessed" : `${(img.confidence * 100).toFixed(0)}% detection confidence`}
+                    </span>
+                    {(role === "assessor" || role === "admin") && <AddToGalleryButton claimImageId={img.id} />}
+                  </div>
                 </div>
+                {(role === "assessor" || role === "admin") && <><DetectionSaliency imageId={img.id}/><PhotoEvidenceInspector imageId={img.id}/><ClaimCorrespondences imageId={img.id} originalUrl={img.original_url}/></>}
               </div>
             ))}
           </div>
         </div>
       )}
+      {(role === "assessor" || role === "admin") && <IntelligenceDossier claimId={claim.id}/>}
+      {(role === "assessor" || role === "admin") &&
+        (claim.status === "awaiting_review" || claim.status === "flagged") &&
+        <AssessmentForm claimId={claim.id} />}
     </div>
   );
 }

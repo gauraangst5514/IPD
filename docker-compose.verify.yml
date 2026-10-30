@@ -1,0 +1,29 @@
+# Isolated verification ports and volumes; leave the original user's stack alone.
+services:
+  postgres:
+    ports: !override ["127.0.0.1:15432:5432"]
+  redis:
+    ports: !override ["127.0.0.1:16379:6379"]
+  neo4j:
+    ports: !override ["127.0.0.1:17474:7474", "127.0.0.1:17687:7687"]
+  minio:
+    ports: !override ["127.0.0.1:19000:9000", "127.0.0.1:19001:9001"]
+  backend:
+    ports: !override ["127.0.0.1:18000:8000"]
+    environment:
+      S3_PUBLIC_ENDPOINT: http://127.0.0.1:19000
+  ml-service:
+    ports: !override ["127.0.0.1:18001:8001"]
+    volumes:
+      - ./var/retrieval-gallery:/app/gallery
+      - ${HOME}/.cache/torch/hub/checkpoints:/root/.cache/torch/hub/checkpoints:ro
+    environment:
+      RETRIEVAL_GALLERY: /app/gallery
+      RETRIEVAL_DAMAGE_EVIDENCE: "1"
+      OMP_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+  worker:
+    environment:
+      S3_PUBLIC_ENDPOINT: http://127.0.0.1:19000
+  frontend:
+    ports: !override ["127.0.0.1:15173:80"]

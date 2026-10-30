@@ -1,0 +1,125 @@
+{
+  "scope": "Real isolated Docker services over HTTP; synthetic claims only",
+  "passed": true,
+  "claims": [
+    "e326ecc7-a514-4282-bb30-57886ef74173",
+    "5e09bc9b-02de-4175-89c6-5523a9de6341"
+  ],
+  "damage_type": "scratch",
+  "persistent_reuse": true,
+  "pdf": true,
+  "neo4j_graph": true,
+  "infrastructure": {
+    "status": "healthy",
+    "services": {
+      "database": {
+        "status": "healthy",
+        "backend": "postgresql"
+      },
+      "storage": {
+        "status": "healthy",
+        "backend": "minio_s3"
+      },
+      "redis": {
+        "status": "healthy",
+        "backend": "redis"
+      },
+      "workers": {
+        "status": "healthy",
+        "count": 1
+      },
+      "graph": {
+        "status": "healthy",
+        "backend": "neo4j",
+        "pending_projections": 0
+      },
+      "ml": {
+        "status": "healthy",
+        "service": "intelliclaim-ml",
+        "version": "0.3.0",
+        "model_trained": true,
+        "components": {
+          "damage_detection": {
+            "available": true,
+            "reason": null,
+            "checkpoint": "best.pt",
+            "classes": [
+              "dent",
+              "scratch",
+              "crack",
+              "glass_shatter",
+              "lamp_broken",
+              "tire_flat"
+            ]
+          },
+          "image_reuse": {
+            "available": true,
+            "method": "sha256_phash_dhash"
+          },
+          "text_consistency": {
+            "available": true,
+            "method": "keyword_baseline"
+          },
+          "vehicle_make": {
+            "available": false
+          },
+          "tamper_detection": {
+            "available": false,
+            "reason": "validated_model_not_integrated"
+          },
+          "damage_reidentification": {
+            "available": false,
+            "reason": "validated_model_not_integrated"
+          },
+          "saliency": {
+            "available": true,
+            "method": "occlusion_sensitivity"
+          },
+          "fraud_probability": {
+            "available": false,
+            "reason": "no_validated_calibrated_claim_probability"
+          },
+          "tabular_classifier": {
+            "available": true,
+            "method": "l2_logistic_regression",
+            "metrics": {
+              "n": 201,
+              "prevalence": 0.24875621890547264,
+              "pr_auc_average_precision": 0.669463882854899,
+              "roc_auc": 0.8785430463576159,
+              "brier_score": 0.12003474281806967,
+              "precision": 0.6470588235294118,
+              "recall": 0.88,
+              "confusion": {
+                "tp": 44,
+                "fp": 24,
+                "tn": 127,
+                "fn": 6
+              },
+              "threshold": 0.26364936487739005,
+              "precision_at_20": 0.65
+            },
+            "research_only": true,
+            "warning": "Public benchmark; calibration and insurer transfer are unverified."
+          },
+          "graph_baseline": {
+            "available": true,
+            "method": "inductive_graphsage_feature_neighbors",
+            "research_only": true,
+            "edge_meaning": "Similar benchmark feature vectors; not a fraud-ring graph"
+          },
+          "plate_reader": {
+            "available": false,
+            "method": "easyocr",
+            "reason": "package_or_weights_missing"
+          }
+        }
+      }
+    },
+    "mode": {
+      "processing": "celery",
+      "graph": "neo4j",
+      "storage": "s3"
+    }
+  }
+}

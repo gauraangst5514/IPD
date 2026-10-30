@@ -1,0 +1,13 @@
+{
+  "claimant_denied": true,
+  "invalid_image_status": 422,
+  "first_ingestion": {
+    "added": false,
+    "reason": "duplicate_image",
+    "image_id": "restart-check-without-extension.png",
+    "gallery_size": 421,
+    "embedding": "Generali_OSNet_AIN_x1_0"
+  },
+  "duplicate_detected": true,
+  "stats_consistent": true
+}

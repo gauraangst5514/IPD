@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import Optional, Literal
 import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from pydantic import BaseModel
+from sqlalchemy import select, case
+from pydantic import BaseModel, Field
 
 from app.core.database import get_db
 from app.core.auth import require_role
@@ -17,8 +17,8 @@ router = APIRouter()
 
 class AssessmentRequest(BaseModel):
     claim_id: str
-    decision: str  # approved / rejected / escalated
-    approved_amount: Optional[float] = None
+    decision: Literal["approved", "rejected", "escalated"]
+    approved_amount: Optional[float] = Field(default=None, ge=0)
     notes: Optional[str] = None
 
 
@@ -55,6 +55,8 @@ async def submit_assessment(
     }
     claim.status = status_map.get(request.decision, ClaimStatus.AWAITING_REVIEW)
     claim.reviewed_at = datetime.now(timezone.utc)
+    from app.services.graph_projection import enqueue_claim
+    await enqueue_claim(claim,db)
 
     # Send email notification to claimant (non-blocking)
     try:
@@ -78,6 +80,7 @@ async def submit_assessment(
     except Exception as e:
         print(f"⚠️  Failed to send assessment notification: {e}")
 
+    await db.flush()
     return {
         "assessment_id": str(assessment.id),
         "claim_id": request.claim_id,
@@ -91,11 +94,11 @@ async def get_review_queue(
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(require_role(["assessor", "admin"])),
 ):
-    """Get claims awaiting assessor review, sorted by fraud risk."""
+    """Get claims awaiting assessor review, with flagged claims first, then oldest submissions."""
     result = await db.execute(
         select(Claim)
         .where(Claim.status.in_([ClaimStatus.AWAITING_REVIEW, ClaimStatus.FLAGGED]))
-        .order_by(Claim.fraud_risk_score.desc().nullslast(), Claim.created_at.asc())
+        .order_by(case((Claim.status == ClaimStatus.FLAGGED, 0), else_=1), Claim.created_at.asc())
     )
     claims = result.scalars().all()
 

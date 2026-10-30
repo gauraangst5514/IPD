@@ -34,11 +34,17 @@ async def _process_claim_async(claim_id: str):
     from app.core.database import async_session
     from app.services.claim_processor import process_claim
 
-    async with async_session() as db:
-        try:
-            result = await process_claim(claim_id, db)
-            await db.commit()
-            print(f"✅ Claim {claim_id} processed: {result}")
-        except Exception:
-            await db.rollback()
-            raise
+    from app.core.database import engine
+    try:
+        async with async_session() as db:
+            try:
+                result = await process_claim(claim_id, db)
+                await db.commit()
+                from app.services.graph_projection import synchronize_pending
+                await synchronize_pending(db)
+                print(f"✅ Claim {claim_id} processed: {result}")
+            except Exception:
+                await db.rollback()
+                raise
+    finally:
+        await engine.dispose()

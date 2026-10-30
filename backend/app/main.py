@@ -19,7 +19,7 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Vite + CRA
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,8 +29,8 @@ app.add_middleware(
 app.include_router(api_router)
 
 # Serve uploaded images locally (dev without MinIO)
-uploads_dir = Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
+uploads_dir = Path(settings.UPLOADS_DIR)
+uploads_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 

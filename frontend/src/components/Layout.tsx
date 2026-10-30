@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 
 const navItems = [
+  { path: "/retrieval", label: "Photo Retrieval", icon: Shield, roles: ["assessor", "admin"] },
+  { path: "/evidence", label: "Evidence Graph", icon: Shield, roles: ["assessor", "admin"] },
   { path: "/", label: "Dashboard", icon: LayoutDashboard, roles: ["claimant", "assessor", "admin"] },
   { path: "/claims", label: "My Claims", icon: FileText, roles: ["claimant"] },
   { path: "/claims/new", label: "New Claim", icon: PlusCircle, roles: ["claimant"] },

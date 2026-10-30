@@ -54,3 +54,30 @@ yolov8s.pt
 backend/.env
 start.sh
 uploads/
+
+# Durable local image evidence; never commit claim data
+ml/evidence/
+
+# Local runtime and generated development credentials
+var/
+.vercel
+.env*
+
+# Private/local assets and separately licensed research material
+.agents/
+.claude/
+skills-lock.json
+ml/weights/
+data/teammate/*.csv
+data/demo/*.jpg
+data/demo/*.png
+research/results/*.npz
+research/results/*.png
+research/results/availability_card_boxes.json
+submission/demo_frames/
+submission/demo_render/
+submission/*.mp4
+requirements-observed-macos.txt
+
+# Also ignore dependency-directory symlinks used for local verification.
+node_modules

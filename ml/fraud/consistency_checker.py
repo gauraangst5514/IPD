@@ -86,14 +86,10 @@ class ConsistencyChecker:
             flags.append("damage_extent_mismatch")
             details["damage_extent_mismatch"] = count_result
 
-        # Compute consistency score (1.0 = no flags)
-        penalty_per_flag = 0.3
-        consistency_score = max(0.0, 1.0 - len(flags) * penalty_per_flag)
-
         return {
             "flags": flags,
             "details": details,
-            "consistency_score": round(consistency_score, 2),
+            "consistency_score": None,
         }
 
     def check_vehicle_make(
@@ -202,10 +198,10 @@ class ConsistencyChecker:
         claims_severe = any(phrase in desc_lower for phrase in severe_phrases)
 
         if claims_minor and detected_severity == "severe":
-            return "Claimant describes minor damage but image shows severe damage — possible understatement to avoid scrutiny"
+            return "The narrative describes minor damage while the visual heuristic suggests severe damage; assessor review is needed"
 
         if claims_severe and detected_severity == "minor":
-            return "Claimant describes total loss but image shows only minor damage — possible exaggeration for higher payout"
+            return "The narrative describes total loss while the available image suggests minor damage; unseen damage and model error require assessor review"
 
         return None
 

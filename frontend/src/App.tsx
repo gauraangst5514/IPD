@@ -7,6 +7,9 @@ import ClaimsPage from "./pages/ClaimsPage";
 import NewClaimPage from "./pages/NewClaimPage";
 import ClaimDetailPage from "./pages/ClaimDetailPage";
 import ReviewQueuePage from "./pages/ReviewQueuePage";
+import EvidenceGraphPage from "./pages/EvidenceGraphPage";
+
+import RetrievalPage from "./pages/RetrievalPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((state) => state.token);
@@ -32,6 +35,8 @@ export default function App() {
         <Route path="claims/new" element={<NewClaimPage />} />
         <Route path="claims/:id" element={<ClaimDetailPage />} />
         <Route path="review" element={<ReviewQueuePage />} />
+        <Route path="retrieval" element={<RetrievalPage />} />
+        <Route path="evidence" element={<EvidenceGraphPage />} />
       </Route>
     </Routes>
   );
